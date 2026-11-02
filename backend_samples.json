@@ -1,0 +1,1296 @@
+{
+    "/research/analytics/agents":  {
+                                       "total_executions":  117,
+                                       "successful_executions":  106,
+                                       "failed_executions":  11,
+                                       "success_rate":  90.6,
+                                       "average_duration_seconds":  18.04,
+                                       "agents":  [
+                                                      {
+                                                          "agent_name":  "Coordinator Agent",
+                                                          "total_executions":  21,
+                                                          "successful_executions":  18,
+                                                          "failed_executions":  3,
+                                                          "success_rate":  85.71,
+                                                          "average_duration_seconds":  14.65
+                                                      },
+                                                      {
+                                                          "agent_name":  "Researcher Agent",
+                                                          "total_executions":  18,
+                                                          "successful_executions":  16,
+                                                          "failed_executions":  2,
+                                                          "success_rate":  88.89,
+                                                          "average_duration_seconds":  38.51
+                                                      },
+                                                      {
+                                                          "agent_name":  "Source Validator",
+                                                          "total_executions":  16,
+                                                          "successful_executions":  16,
+                                                          "failed_executions":  0,
+                                                          "success_rate":  100.0,
+                                                          "average_duration_seconds":  0.07
+                                                      },
+                                                      {
+                                                          "agent_name":  "Fact-Checker Agent",
+                                                          "total_executions":  16,
+                                                          "successful_executions":  11,
+                                                          "failed_executions":  5,
+                                                          "success_rate":  68.75,
+                                                          "average_duration_seconds":  31.57
+                                                      },
+                                                      {
+                                                          "agent_name":  "Analyst Agent",
+                                                          "total_executions":  16,
+                                                          "successful_executions":  16,
+                                                          "failed_executions":  0,
+                                                          "success_rate":  100.0,
+                                                          "average_duration_seconds":  9.21
+                                                      },
+                                                      {
+                                                          "agent_name":  "Report Writer Agent",
+                                                          "total_executions":  15,
+                                                          "successful_executions":  14,
+                                                          "failed_executions":  1,
+                                                          "success_rate":  93.33,
+                                                          "average_duration_seconds":  30.34
+                                                      },
+                                                      {
+                                                          "agent_name":  "Quality Scorer Agent",
+                                                          "total_executions":  15,
+                                                          "successful_executions":  15,
+                                                          "failed_executions":  0,
+                                                          "success_rate":  100.0,
+                                                          "average_duration_seconds":  0.07
+                                                      }
+                                                  ]
+                                   },
+    "/scheduler/status":  {
+                              "success":  true,
+                              "scheduler":  "priority_and_dependency_based",
+                              "total_pending_tasks":  5,
+                              "pending_by_priority":  {
+                                                          "critical":  0,
+                                                          "high":  1,
+                                                          "normal":  4,
+                                                          "low":  0
+                                                      },
+                              "next_priority":  "high"
+                          },
+    "/workflow/statistics":  {
+                                 "success":  true,
+                                 "total_tasks":  32,
+                                 "status_counts":  {
+                                                       "pending":  1,
+                                                       "running":  0,
+                                                       "completed":  0,
+                                                       "failed":  0
+                                                   },
+                                 "priority_counts":  {
+                                                         "critical":  0,
+                                                         "high":  0,
+                                                         "normal":  1,
+                                                         "low":  0
+                                                     },
+                                 "total_ready_tasks":  5,
+                                 "blocked_tasks":  0,
+                                 "completion_percentage":  0.0
+                             },
+    "/research/tasks":  {
+                            "success":  true,
+                            "total_tasks":  32,
+                            "tasks":  [
+                                          {
+                                              "task_id":  "e9e7c1f2-be4e-4e5e-93a9-92f072c85819",
+                                              "research_question":  "Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-30T18:15:00+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                              "research_question":  "Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-29T20:10:52+00:00",
+                                              "started_at":  "2026-10-30T18:42:42+00:00",
+                                              "finished_at":  "2026-10-30T18:43:54+00:00",
+                                              "error":  null,
+                                              "report_filename":  "comparative_analysis_of_retrievalaugmented_generation_rag_and_finetuning_for_ai__20261030_114354.md",
+                                              "quality_score":  100,
+                                              "retry_count":  1,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "c58632db-200c-41bb-b14e-628a572f53ad",
+                                                             "research_timestamp":  "2026-10-30T18:42:42+00:00",
+                                                             "report_filename":  "comparative_analysis_of_retrievalaugmented_generation_rag_and_finetuning_for_ai__20261030_114354.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\comparative_analysis_of_retrievalaugmented_generation_rag_and_finetuning_for_ai__20261030_114354.md",
+                                                             "metadata_filename":  "comparative_analysis_of_retrievalaugmented_generation_rag_and_finetuning_for_ai__20261030_114354.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "ececaa9c-9825-4457-b94f-c997b01d2a29"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "955d04a7-7411-49bf-bf20-8518095fadce",
+                                              "research_question":  "Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-29T19:59:20+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "a89cea2f-0225-4350-b395-c36f8fc2bb2d",
+                                              "research_question":  "Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-29T18:55:25+00:00",
+                                              "started_at":  "2026-10-29T18:56:03+00:00",
+                                              "finished_at":  "2026-10-29T18:56:51+00:00",
+                                              "error":  "Coordinator Agent failed: APIConnectionError: Connection error.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "66b11ea2-9a94-47f1-aa72-5ae047cb675d",
+                                              "research_question":  "[STAGE 4 AUTOMATED TEST 20261029_110958] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-29T18:09:58+00:00",
+                                              "started_at":  "2026-10-29T18:09:58+00:00",
+                                              "finished_at":  "2026-10-29T18:11:17+00:00",
+                                              "error":  "Coordinator Agent failed: APIConnectionError: Connection error.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "2574cfbe-5b3f-4dd0-b3b7-f4e72d815466",
+                                              "research_question":  "[STAGE 4 AUTOMATED TEST 20261029_103658] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-29T17:36:58+00:00",
+                                              "started_at":  "2026-10-29T17:36:58+00:00",
+                                              "finished_at":  "2026-10-29T17:37:29+00:00",
+                                              "error":  "Fact-checking failed after 2 attempts: RateLimitError: Error code: 429 - {\u0027error\u0027: {\u0027message\u0027: \u0027Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01m380z4zse3bbhn5rb0g54tnt` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4953, Requested 3664. Please try again in 4.627499999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\u0027, \u0027type\u0027: \u0027tokens\u0027, \u0027code\u0027: \u0027rate_limit_exceeded\u0027}}. Model: openai/gpt-oss-20b.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "1b8705fe-47e7-4ea1-8718-85205010186e",
+                                              "research_question":  "[STAGE 4 AUTOMATED TEST 20261029_103128] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-29T17:31:28+00:00",
+                                              "started_at":  "2026-10-29T17:31:28+00:00",
+                                              "finished_at":  "2026-10-29T17:31:58+00:00",
+                                              "error":  "Fact-checking failed after 2 attempts: RateLimitError: Error code: 429 - {\u0027error\u0027: {\u0027message\u0027: \u0027Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01m380z4zse3bbhn5rb0g54tnt` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5658, Requested 4349. Please try again in 15.0525s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\u0027, \u0027type\u0027: \u0027tokens\u0027, \u0027code\u0027: \u0027rate_limit_exceeded\u0027}}. Model: openai/gpt-oss-20b.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "3a6d5c99-afc3-452a-a4b6-8686b827ee4e",
+                                              "research_question":  "[STAGE 4 AUTOMATED TEST 20261029_082032] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-29T15:20:32+00:00",
+                                              "started_at":  "2026-10-29T15:20:32+00:00",
+                                              "finished_at":  "2026-10-29T15:23:29+00:00",
+                                              "error":  "Fact-checking failed: APITimeoutError: Request timed out.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "07e91c51-86a9-4a69-8f97-60039cd0381d",
+                                              "research_question":  "[AUTOMATED TEST 20261027-130817] Dependent task: verify dependency blocking.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T20:08:18+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "74d21ec5-b9cd-429b-90d5-8e6cd6f24530",
+                                              "research_question":  "[AUTOMATED TEST 20261027-130817] Prerequisite task: verify task-management flow.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T20:08:17+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "high",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "ef6be431-921f-4a6a-9bc2-4e5201062814",
+                                              "research_question":  "What is Machine learning?",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T17:47:24+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "e9e3798f-4ef8-462c-afaa-5481422defd6",
+                                              "research_question":  "What is AI?",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T17:46:28+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "a78d8d19-19fd-4c6f-9d97-b6b9ef8c8796",
+                                              "research_question":  "Analyze the benefits, limitations, and practical design considerations of multi-agent AI systems.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T17:16:52+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "4852c012-3152-4c9b-95e8-00ca652a15a6",
+                                              "research_question":  "Research how multiple AI agents coordinate, communicate, and divide responsibilities.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T17:16:04+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "9edcb582-1b82-460f-abd7-fd7d9ab098d2",
+                                              "research_question":  "Research the core concepts and practical applications of AI agent systems.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T17:15:17+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "f4c32111-43c9-4168-8144-84717dca4044",
+                                              "research_question":  "Compare multi-agent AI architectures and recommend the most appropriate designs for practical research and automation systems.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T16:32:01+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "de963791-1b17-4b7b-8b99-67867b0d07a2",
+                                              "research_question":  "Compare different multi-agent AI architectures, including centralized, decentralized, and hierarchical approaches.",
+                                              "status":  "pending",
+                                              "created_at":  "2026-10-27T16:31:30+00:00",
+                                              "started_at":  null,
+                                              "finished_at":  null,
+                                              "error":  null,
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "4591d21c-37ec-4139-92a3-a845763286af",
+                                              "research_question":  "Explain the fundamentals, benefits, limitations, and real-world applications of multi-agent artificial intelligence systems.",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-27T16:29:23+00:00",
+                                              "started_at":  "2026-10-27T16:44:39+00:00",
+                                              "finished_at":  "2026-10-27T16:44:44+00:00",
+                                              "error":  "Coordinator Agent failed: APIConnectionError: Connection error.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "41dbcfdd-e5dd-4fcd-95e2-71cf4ff04aaa",
+                                              "research_question":  "Compare multi-agent AI architectures and recommend the most appropriate designs for practical research and automation systems.",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-27T16:28:21+00:00",
+                                              "started_at":  "2026-10-27T17:23:13+00:00",
+                                              "finished_at":  "2026-10-27T17:26:03+00:00",
+                                              "error":  null,
+                                              "report_filename":  "report_title_20261027_102603.md",
+                                              "quality_score":  99,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "e577cc6d-6b58-43b4-a761-8a5b2a5204ec",
+                                                             "research_timestamp":  "2026-10-27T17:23:13+00:00",
+                                                             "report_filename":  "report_title_20261027_102603.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\report_title_20261027_102603.md",
+                                                             "metadata_filename":  "report_title_20261027_102603.json",
+                                                             "quality_score":  99,
+                                                             "trace_id":  "35d99b34-9551-43e3-b80d-d74e43759abf"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "959fd20f-b969-498d-b519-2f606644b53a",
+                                              "research_question":  "Compare different multi-agent AI architectures, including centralized, decentralized, and hierarchical approaches.",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-27T16:28:02+00:00",
+                                              "started_at":  "2026-10-27T17:20:49+00:00",
+                                              "finished_at":  "2026-10-27T17:23:12+00:00",
+                                              "error":  null,
+                                              "report_filename":  "comparative_analysis_of_centralized_decentralized_and_hierarchical_multiagent_ai_20261027_102312.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "e1b112c0-2891-4a9e-bcb6-9b0403060db5",
+                                                             "research_timestamp":  "2026-10-27T17:20:49+00:00",
+                                                             "report_filename":  "comparative_analysis_of_centralized_decentralized_and_hierarchical_multiagent_ai_20261027_102312.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\comparative_analysis_of_centralized_decentralized_and_hierarchical_multiagent_ai_20261027_102312.md",
+                                                             "metadata_filename":  "comparative_analysis_of_centralized_decentralized_and_hierarchical_multiagent_ai_20261027_102312.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "a7f037fd-dbb8-408e-99e2-b0683841337f"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "906445a8-5172-4b24-a76e-e5c391851eda",
+                                              "research_question":  "Explain the fundamentals, benefits, limitations, and real-world applications of multi-agent artificial intelligence systems.",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-27T16:26:52+00:00",
+                                              "started_at":  "2026-10-27T17:18:35+00:00",
+                                              "finished_at":  "2026-10-27T17:20:48+00:00",
+                                              "error":  "Researcher Agent failed: ConnectionError: HTTPSConnectionPool(host=\u0027api.tavily.com\u0027, port=443): Read timed out.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "777ab80c-36aa-464e-8e6f-53cb9bc29b4a",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-27T08:58:44+00:00",
+                                              "started_at":  "2026-10-27T08:59:04+00:00",
+                                              "finished_at":  "2026-10-27T09:02:19+00:00",
+                                              "error":  null,
+                                              "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_020219.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "9bc12da5-2834-4b05-b55e-1460e49acfba",
+                                                             "research_timestamp":  "2026-10-27T08:59:04+00:00",
+                                                             "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_020219.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_020219.md",
+                                                             "metadata_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_020219.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "57fc507b-81af-4d48-b1e3-9650db891b8a"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "8fff38de-61af-437d-8f07-428947304757",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-27T07:51:42+00:00",
+                                              "started_at":  "2026-10-27T07:52:04+00:00",
+                                              "finished_at":  "2026-10-27T07:53:47+00:00",
+                                              "error":  "Report Writer failed: RateLimitError: Error code: 429 - {\u0027error\u0027: {\u0027message\u0027: \u0027Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01m380z4zse3bbhn5rb0g54tnt` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 2828, Requested 7483. Please try again in 17.3325s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\u0027, \u0027type\u0027: \u0027tokens\u0027, \u0027code\u0027: \u0027rate_limit_exceeded\u0027}}",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "critical",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "7275491f-6cb4-4937-811d-25fbd0140a15",
+                                              "research_question":  "What is AI?",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-27T07:23:26+00:00",
+                                              "started_at":  "2026-10-27T07:23:44+00:00",
+                                              "finished_at":  "2026-10-27T07:25:31+00:00",
+                                              "error":  null,
+                                              "report_filename":  "report_title_20261027_002531.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "d67325b2-102b-4fb9-b586-5199bd58c265",
+                                                             "research_timestamp":  "2026-10-27T07:23:44+00:00",
+                                                             "report_filename":  "report_title_20261027_002531.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\report_title_20261027_002531.md",
+                                                             "metadata_filename":  "report_title_20261027_002531.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "d7c899cd-e6b0-47c4-8504-161be50277ff"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "9d0645b2-1109-4a43-a5bf-11966e85a323",
+                                              "research_question":  "What is Machine learning?",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-27T07:13:03+00:00",
+                                              "started_at":  "2026-10-27T07:13:24+00:00",
+                                              "finished_at":  "2026-10-27T07:15:04+00:00",
+                                              "error":  null,
+                                              "report_filename":  "machine_learning_definitions_evolution_algorithms_applications_and_ethical_consi_20261027_001504.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "e6475147-5703-4617-be56-3c29c0ce4d16",
+                                                             "research_timestamp":  "2026-10-27T07:13:25+00:00",
+                                                             "report_filename":  "machine_learning_definitions_evolution_algorithms_applications_and_ethical_consi_20261027_001504.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\machine_learning_definitions_evolution_algorithms_applications_and_ethical_consi_20261027_001504.md",
+                                                             "metadata_filename":  "machine_learning_definitions_evolution_algorithms_applications_and_ethical_consi_20261027_001504.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "b3615689-4d0e-44d5-beeb-2587305f9cdd"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "57af69e9-74ea-418a-8a64-fd63b32a1321",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-27T07:04:12+00:00",
+                                              "started_at":  "2026-10-27T07:04:48+00:00",
+                                              "finished_at":  "2026-10-27T07:06:59+00:00",
+                                              "error":  null,
+                                              "report_filename":  "enhancing_business_automation_through_multiagent_ai_systems_20261027_000659.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "549afd4e-a3ef-4693-b1e0-a5fa90e3b907",
+                                                             "research_timestamp":  "2026-10-27T07:04:48+00:00",
+                                                             "report_filename":  "enhancing_business_automation_through_multiagent_ai_systems_20261027_000659.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\enhancing_business_automation_through_multiagent_ai_systems_20261027_000659.md",
+                                                             "metadata_filename":  "enhancing_business_automation_through_multiagent_ai_systems_20261027_000659.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "77c278d0-4b45-4af4-a36f-a7f586cb867d"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "a72b7d25-e1d5-4c80-aa03-d9617627616a",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-27T06:46:44+00:00",
+                                              "started_at":  "2026-10-27T06:49:58+00:00",
+                                              "finished_at":  "2026-10-27T06:51:28+00:00",
+                                              "error":  null,
+                                              "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_an_evidencebased_analys_20261026_235128.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "2583aeec-beb6-4efb-959d-9a3ed986be77",
+                                                             "research_timestamp":  "2026-10-27T06:49:58+00:00",
+                                                             "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_an_evidencebased_analys_20261026_235128.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\enhancing_business_automation_with_multiagent_ai_systems_an_evidencebased_analys_20261026_235128.md",
+                                                             "metadata_filename":  "enhancing_business_automation_with_multiagent_ai_systems_an_evidencebased_analys_20261026_235128.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "11860baa-3fdd-4204-964e-b9a77710fd36"
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "2bdcd93a-fb3d-4cba-9e47-54dfe46e9e5e",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-26T19:09:21+00:00",
+                                              "started_at":  "2026-10-26T19:09:48+00:00",
+                                              "finished_at":  "2026-10-26T19:11:46+00:00",
+                                              "error":  null,
+                                              "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_121146.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "158b53d2-fd32-44c5-b961-108c175d769e",
+                                                             "research_timestamp":  "2026-10-26T19:09:48+00:00",
+                                                             "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_121146.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_121146.md",
+                                                             "metadata_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_121146.json",
+                                                             "quality_score":  100
+                                                         }
+                                          },
+                                          {
+                                              "task_id":  "1a0dd214-bbdd-4407-b7af-548e7140a4a4",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-26T18:53:30+00:00",
+                                              "started_at":  "2026-10-26T18:54:51+00:00",
+                                              "finished_at":  "2026-10-26T18:56:01+00:00",
+                                              "error":  "Researcher Agent failed: ConnectionError: (\u0027Connection aborted.\u0027, RemoteDisconnected(\u0027Remote end closed connection without response\u0027))",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "80bf8789-1346-4bc9-a252-8cf5666e81a4",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-26T15:55:46+00:00",
+                                              "started_at":  "2026-10-26T15:56:30+00:00",
+                                              "finished_at":  "2026-10-26T15:58:35+00:00",
+                                              "error":  "Report Writer failed: APITimeoutError: Request timed out.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "1c12e293-a35b-4f18-b662-6133925065a2",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "failed",
+                                              "created_at":  "2026-10-26T14:56:32+00:00",
+                                              "started_at":  "2026-10-27T17:16:59+00:00",
+                                              "finished_at":  "2026-10-27T17:18:34+00:00",
+                                              "error":  "Groq returned an empty fact-checking response. Finish reason: length. Model: openai/gpt-oss-20b.",
+                                              "report_filename":  null,
+                                              "quality_score":  null,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  null
+                                          },
+                                          {
+                                              "task_id":  "e8083fa7-01c4-4964-babe-581f8dc48121",
+                                              "research_question":  "How can multi-agent AI systems improve business automation?",
+                                              "status":  "completed",
+                                              "created_at":  "2026-10-26T14:50:58+00:00",
+                                              "started_at":  "2026-10-27T17:14:33+00:00",
+                                              "finished_at":  "2026-10-27T17:16:58+00:00",
+                                              "error":  null,
+                                              "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_101658.md",
+                                              "quality_score":  100,
+                                              "retry_count":  0,
+                                              "priority":  "normal",
+                                              "result":  {
+                                                             "research_id":  "65af0f07-e7a4-4c6f-8326-16eb54709b0a",
+                                                             "research_timestamp":  "2026-10-27T17:14:34+00:00",
+                                                             "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_101658.md",
+                                                             "report_file":  "C:\\Users\\ahmad\\Desktop\\AI_Multi_Agent_System\\reports\\leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_101658.md",
+                                                             "metadata_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_101658.json",
+                                                             "quality_score":  100,
+                                                             "trace_id":  "dd1b4333-7036-4538-a72b-2593debaff5c"
+                                                         }
+                                          }
+                                      ]
+                        },
+    "/research/history":  {
+                              "success":  true,
+                              "total_records":  13,
+                              "history":  [
+                                              {
+                                                  "research_id":  "c58632db-200c-41bb-b14e-628a572f53ad",
+                                                  "research_timestamp":  "2026-10-30T18:42:42+00:00",
+                                                  "research_question":  "Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                  "report_filename":  "comparative_analysis_of_retrievalaugmented_generation_rag_and_finetuning_for_ai__20261030_114354.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  10,
+                                                                            "accepted_sources":  10,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "comparative_analysis_of_retrievalaugmented_generation_rag_and_finetuning_for_ai__20261030_114354.json"
+                                              },
+                                              {
+                                                  "research_id":  "e577cc6d-6b58-43b4-a761-8a5b2a5204ec",
+                                                  "research_timestamp":  "2026-10-27T17:23:13+00:00",
+                                                  "research_question":  "Compare multi-agent AI architectures and recommend the most appropriate designs for practical research and automation systems.",
+                                                  "report_filename":  "report_title_20261027_102603.md",
+                                                  "quality_score":  99,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  15,
+                                                                            "accepted_sources":  15,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "report_title_20261027_102603.json"
+                                              },
+                                              {
+                                                  "research_id":  "e1b112c0-2891-4a9e-bcb6-9b0403060db5",
+                                                  "research_timestamp":  "2026-10-27T17:20:49+00:00",
+                                                  "research_question":  "Compare different multi-agent AI architectures, including centralized, decentralized, and hierarchical approaches.",
+                                                  "report_filename":  "comparative_analysis_of_centralized_decentralized_and_hierarchical_multiagent_ai_20261027_102312.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  13,
+                                                                            "accepted_sources":  13,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "comparative_analysis_of_centralized_decentralized_and_hierarchical_multiagent_ai_20261027_102312.json"
+                                              },
+                                              {
+                                                  "research_id":  "65af0f07-e7a4-4c6f-8326-16eb54709b0a",
+                                                  "research_timestamp":  "2026-10-27T17:14:34+00:00",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_101658.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  15,
+                                                                            "accepted_sources":  15,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_101658.json"
+                                              },
+                                              {
+                                                  "research_id":  "9bc12da5-2834-4b05-b55e-1460e49acfba",
+                                                  "research_timestamp":  "2026-10-27T08:59:04+00:00",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_020219.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  15,
+                                                                            "accepted_sources":  15,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_020219.json"
+                                              },
+                                              {
+                                                  "research_id":  "d67325b2-102b-4fb9-b586-5199bd58c265",
+                                                  "research_timestamp":  "2026-10-27T07:23:44+00:00",
+                                                  "research_question":  "What is AI?",
+                                                  "report_filename":  "report_title_20261027_002531.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  14,
+                                                                            "accepted_sources":  14,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "report_title_20261027_002531.json"
+                                              },
+                                              {
+                                                  "research_id":  "e6475147-5703-4617-be56-3c29c0ce4d16",
+                                                  "research_timestamp":  "2026-10-27T07:13:25+00:00",
+                                                  "research_question":  "What is Machine learning?",
+                                                  "report_filename":  "machine_learning_definitions_evolution_algorithms_applications_and_ethical_consi_20261027_001504.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  14,
+                                                                            "accepted_sources":  14,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "machine_learning_definitions_evolution_algorithms_applications_and_ethical_consi_20261027_001504.json"
+                                              },
+                                              {
+                                                  "research_id":  "549afd4e-a3ef-4693-b1e0-a5fa90e3b907",
+                                                  "research_timestamp":  "2026-10-27T07:04:48+00:00",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "report_filename":  "enhancing_business_automation_through_multiagent_ai_systems_20261027_000659.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  14,
+                                                                            "accepted_sources":  14,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "enhancing_business_automation_through_multiagent_ai_systems_20261027_000659.json"
+                                              },
+                                              {
+                                                  "research_id":  "2583aeec-beb6-4efb-959d-9a3ed986be77",
+                                                  "research_timestamp":  "2026-10-27T06:49:58+00:00",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_an_evidencebased_analys_20261026_235128.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  15,
+                                                                            "accepted_sources":  15,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "enhancing_business_automation_with_multiagent_ai_systems_an_evidencebased_analys_20261026_235128.json"
+                                              },
+                                              {
+                                                  "research_id":  "158b53d2-fd32-44c5-b961-108c175d769e",
+                                                  "research_timestamp":  "2026-10-26T19:09:48+00:00",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_121146.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  15,
+                                                                            "accepted_sources":  15,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_121146.json"
+                                              },
+                                              {
+                                                  "research_id":  "9b9a3cbb-ade1-4c43-9f7c-fd64da4f8d57",
+                                                  "research_timestamp":  "2026-10-26T08:49:50+00:00",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_015151.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  13,
+                                                                            "accepted_sources":  13,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_015151.json"
+                                              },
+                                              {
+                                                  "research_id":  "8e23b5e8-fe3a-40e9-bc3b-ded55dc00296",
+                                                  "research_timestamp":  "2026-10-25T21:15:04+00:00",
+                                                  "research_question":  "What is AI?",
+                                                  "report_filename":  "report_title_20261025_141716.md",
+                                                  "quality_score":  100,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  15,
+                                                                            "accepted_sources":  15,
+                                                                            "rejected_sources":  0
+                                                                        },
+                                                  "metadata_filename":  "report_title_20261025_141716.json"
+                                              },
+                                              {
+                                                  "research_id":  "e460871f-47c9-420f-8633-7ea3ac5d40c7",
+                                                  "research_timestamp":  "2026-10-25T20:35:10+00:00",
+                                                  "research_question":  "How can multi-agent AI systems automate research?",
+                                                  "report_filename":  "sample_research_report.md",
+                                                  "quality_score":  85,
+                                                  "source_statistics":  {
+                                                                            "total_sources":  10,
+                                                                            "accepted_sources":  8,
+                                                                            "rejected_sources":  2
+                                                                        },
+                                                  "metadata_filename":  "sample_research_report.json"
+                                              }
+                                          ]
+                          },
+    "/research/monitoring/overview":  {
+                                          "system_status":  "operational_with_failures",
+                                          "tasks":  {
+                                                        "total":  0,
+                                                        "pending":  0,
+                                                        "running":  0,
+                                                        "completed":  0,
+                                                        "failed":  0
+                                                    },
+                                          "agents":  {
+                                                         "total_executions":  117,
+                                                         "successful_executions":  106,
+                                                         "failed_executions":  11,
+                                                         "success_rate":  90.6,
+                                                         "average_duration_seconds":  18.04,
+                                                         "agent_details":  [
+                                                                               {
+                                                                                   "agent_name":  "Coordinator Agent",
+                                                                                   "total_executions":  21,
+                                                                                   "successful_executions":  18,
+                                                                                   "failed_executions":  3,
+                                                                                   "success_rate":  85.71,
+                                                                                   "average_duration_seconds":  14.65
+                                                                               },
+                                                                               {
+                                                                                   "agent_name":  "Researcher Agent",
+                                                                                   "total_executions":  18,
+                                                                                   "successful_executions":  16,
+                                                                                   "failed_executions":  2,
+                                                                                   "success_rate":  88.89,
+                                                                                   "average_duration_seconds":  38.51
+                                                                               },
+                                                                               {
+                                                                                   "agent_name":  "Source Validator",
+                                                                                   "total_executions":  16,
+                                                                                   "successful_executions":  16,
+                                                                                   "failed_executions":  0,
+                                                                                   "success_rate":  100.0,
+                                                                                   "average_duration_seconds":  0.07
+                                                                               },
+                                                                               {
+                                                                                   "agent_name":  "Fact-Checker Agent",
+                                                                                   "total_executions":  16,
+                                                                                   "successful_executions":  11,
+                                                                                   "failed_executions":  5,
+                                                                                   "success_rate":  68.75,
+                                                                                   "average_duration_seconds":  31.57
+                                                                               },
+                                                                               {
+                                                                                   "agent_name":  "Analyst Agent",
+                                                                                   "total_executions":  16,
+                                                                                   "successful_executions":  16,
+                                                                                   "failed_executions":  0,
+                                                                                   "success_rate":  100.0,
+                                                                                   "average_duration_seconds":  9.21
+                                                                               },
+                                                                               {
+                                                                                   "agent_name":  "Report Writer Agent",
+                                                                                   "total_executions":  15,
+                                                                                   "successful_executions":  14,
+                                                                                   "failed_executions":  1,
+                                                                                   "success_rate":  93.33,
+                                                                                   "average_duration_seconds":  30.34
+                                                                               },
+                                                                               {
+                                                                                   "agent_name":  "Quality Scorer Agent",
+                                                                                   "total_executions":  15,
+                                                                                   "successful_executions":  15,
+                                                                                   "failed_executions":  0,
+                                                                                   "success_rate":  100.0,
+                                                                                   "average_duration_seconds":  0.07
+                                                                               }
+                                                                           ]
+                                                     },
+                                          "workflows":  {
+                                                            "total_workflows":  19,
+                                                            "completed_workflows":  9,
+                                                            "failed_workflows":  10,
+                                                            "running_workflows":  0,
+                                                            "success_rate":  47.37,
+                                                            "average_duration_seconds":  101.75
+                                                        }
+                                      },
+    "/research/monitoring/activity":  {
+                                          "limit":  20,
+                                          "activity":  {
+                                                           "success":  true,
+                                                           "total_logs":  20,
+                                                           "logs":  [
+                                                                        {
+                                                                            "log_id":  "22d39155-c139-4624-8dc0-e803278934ae",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Report Writer Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:43:49.472+00:00",
+                                                                            "finished_at":  "2026-10-30T18:43:54.640+00:00",
+                                                                            "duration_seconds":  5.168,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: completed; Updated fields: final_report, status, error, activity_log, report_file, report_filename, metadata_filename, metadata_file",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "d1ea8794-cefc-415e-8483-e4dff69667e7",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Quality Scorer Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:43:49.376+00:00",
+                                                                            "finished_at":  "2026-10-30T18:43:49.441+00:00",
+                                                                            "duration_seconds":  0.065,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: updated; Updated fields: quality_score, quality_feedback, quality_details, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "9952906f-8558-477e-b66a-380b298047a5",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Fact-Checker Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:43:40.381+00:00",
+                                                                            "finished_at":  "2026-10-30T18:43:49.360+00:00",
+                                                                            "duration_seconds":  8.979,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: completed; Updated fields: fact_check, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "2e038b4e-4b50-4418-93df-7859911d6c23",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Analyst Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:43:26.408+00:00",
+                                                                            "finished_at":  "2026-10-30T18:43:40.365+00:00",
+                                                                            "duration_seconds":  13.957,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: analyzing; Updated fields: analysis, final_report, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "3d962ae2-d8d3-4c0a-a850-4aefb8e8e617",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Source Validator",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:43:26.180+00:00",
+                                                                            "finished_at":  "2026-10-30T18:43:26.340+00:00",
+                                                                            "duration_seconds":  0.161,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: validated; Updated fields: search_results, total_sources, accepted_sources, rejected_sources, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "d65c7ec7-d7ee-432e-8cc6-12aa3c2ed6a9",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Researcher Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:43:01.851+00:00",
+                                                                            "finished_at":  "2026-10-30T18:43:25.584+00:00",
+                                                                            "duration_seconds":  23.734,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: analyzing; Updated fields: search_results, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "42bd3215-0003-4fe8-813b-6aafc1f3874d",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Coordinator Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:42:42.518+00:00",
+                                                                            "finished_at":  "2026-10-30T18:43:01.777+00:00",
+                                                                            "duration_seconds":  19.26,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: researching; Updated fields: research_plan, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "d9c7237e-53e9-4979-b994-fd1ad806c48d",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Fact-Checker Agent",
+                                                                            "status":  "failed",
+                                                                            "started_at":  "2026-10-30T18:33:03.727+00:00",
+                                                                            "finished_at":  "2026-10-30T18:33:11.263+00:00",
+                                                                            "duration_seconds":  7.537,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  null,
+                                                                            "error_message":  "RuntimeError: Groq returned an empty fact-checking response. Finish reason: length. Model: openai/gpt-oss-20b."
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "3802f9cd-0035-49b6-9801-690f63ae3aa3",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Analyst Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:32:47.883+00:00",
+                                                                            "finished_at":  "2026-10-30T18:33:03.670+00:00",
+                                                                            "duration_seconds":  15.787,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: analyzing; Updated fields: analysis, final_report, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "efc1eb08-cc6a-4c81-9b15-fb37a7abff8c",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Source Validator",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:32:47.838+00:00",
+                                                                            "finished_at":  "2026-10-30T18:32:47.869+00:00",
+                                                                            "duration_seconds":  0.031,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: validated; Updated fields: search_results, total_sources, accepted_sources, rejected_sources, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "91062ede-862e-4611-bfc8-8cf3712978f6",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Researcher Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:32:12.913+00:00",
+                                                                            "finished_at":  "2026-10-30T18:32:47.819+00:00",
+                                                                            "duration_seconds":  34.907,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: analyzing; Updated fields: search_results, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "53e19cbd-fda3-43e5-8b26-463ca5fca444",
+                                                                            "task_id":  "70cfb901-f435-4a0a-92f9-fdbff2d78ae9",
+                                                                            "agent_name":  "Coordinator Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-30T18:31:48.740+00:00",
+                                                                            "finished_at":  "2026-10-30T18:32:12.892+00:00",
+                                                                            "duration_seconds":  24.153,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: researching; Updated fields: research_plan, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "eaa484ab-4871-4458-94b2-35024966a17f",
+                                                                            "task_id":  "a89cea2f-0225-4350-b395-c36f8fc2bb2d",
+                                                                            "agent_name":  "Coordinator Agent",
+                                                                            "status":  "failed",
+                                                                            "started_at":  "2026-10-29T18:56:04.306+00:00",
+                                                                            "finished_at":  "2026-10-29T18:56:51.143+00:00",
+                                                                            "duration_seconds":  46.838,
+                                                                            "input_summary":  "Question: Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                                            "output_summary":  "Status: failed; Updated fields: research_plan, status, error, activity_log",
+                                                                            "error_message":  "Coordinator Agent failed: APIConnectionError: Connection error."
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "2ca77cc7-66ee-4f5e-a517-980c9b500d52",
+                                                                            "task_id":  "66b11ea2-9a94-47f1-aa72-5ae047cb675d",
+                                                                            "agent_name":  "Coordinator Agent",
+                                                                            "status":  "failed",
+                                                                            "started_at":  "2026-10-29T18:09:58.586+00:00",
+                                                                            "finished_at":  "2026-10-29T18:11:17.334+00:00",
+                                                                            "duration_seconds":  78.748,
+                                                                            "input_summary":  "Question: [STAGE 4 AUTOMATED TEST 20261029_110958] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                                                            "output_summary":  "Status: failed; Updated fields: research_plan, status, error, activity_log",
+                                                                            "error_message":  "Coordinator Agent failed: APIConnectionError: Connection error."
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "2cbc60fd-3fa0-4732-ba3b-0c9724dd599e",
+                                                                            "task_id":  "2574cfbe-5b3f-4dd0-b3b7-f4e72d815466",
+                                                                            "agent_name":  "Report Writer Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-29T17:37:28.939+00:00",
+                                                                            "finished_at":  "2026-10-29T17:37:29.247+00:00",
+                                                                            "duration_seconds":  0.309,
+                                                                            "input_summary":  "Question: [STAGE 4 AUTOMATED TEST 20261029_103658] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                                                            "output_summary":  "Status: updated; Updated fields: ",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "9bc584e3-2fa9-4bac-8294-5e3075bdbcce",
+                                                                            "task_id":  "2574cfbe-5b3f-4dd0-b3b7-f4e72d815466",
+                                                                            "agent_name":  "Quality Scorer Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-29T17:37:28.849+00:00",
+                                                                            "finished_at":  "2026-10-29T17:37:28.915+00:00",
+                                                                            "duration_seconds":  0.066,
+                                                                            "input_summary":  "Question: [STAGE 4 AUTOMATED TEST 20261029_103658] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                                                            "output_summary":  "Status: updated; Updated fields: quality_score, quality_feedback, quality_details, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "cdb98e35-f924-453b-865e-b7a438b31f98",
+                                                                            "task_id":  "2574cfbe-5b3f-4dd0-b3b7-f4e72d815466",
+                                                                            "agent_name":  "Fact-Checker Agent",
+                                                                            "status":  "failed",
+                                                                            "started_at":  "2026-10-29T17:37:26.062+00:00",
+                                                                            "finished_at":  "2026-10-29T17:37:28.815+00:00",
+                                                                            "duration_seconds":  2.754,
+                                                                            "input_summary":  "Question: [STAGE 4 AUTOMATED TEST 20261029_103658] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                                                            "output_summary":  "Status: failed; Updated fields: status, error, activity_log",
+                                                                            "error_message":  "Fact-checking failed after 2 attempts: RateLimitError: Error code: 429 - {\u0027error\u0027: {\u0027message\u0027: \u0027Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01m380z4zse3bbhn5rb0g54tnt` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 4953, Requested 3664. Please try again in 4.627499999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\u0027, \u0027type\u0027: \u0027tokens\u0027, \u0027code\u0027: \u0027rate_limit_exceeded\u0027}}. Model: openai/gpt-oss-20b."
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "426d45aa-d513-4b7c-b323-df82a7d4e35d",
+                                                                            "task_id":  "2574cfbe-5b3f-4dd0-b3b7-f4e72d815466",
+                                                                            "agent_name":  "Analyst Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-29T17:37:22.823+00:00",
+                                                                            "finished_at":  "2026-10-29T17:37:25.927+00:00",
+                                                                            "duration_seconds":  3.104,
+                                                                            "input_summary":  "Question: [STAGE 4 AUTOMATED TEST 20261029_103658] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                                                            "output_summary":  "Status: analyzing; Updated fields: analysis, final_report, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "7b305439-5bf4-44ae-a983-b15d68ac1f08",
+                                                                            "task_id":  "2574cfbe-5b3f-4dd0-b3b7-f4e72d815466",
+                                                                            "agent_name":  "Source Validator",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-29T17:37:22.719+00:00",
+                                                                            "finished_at":  "2026-10-29T17:37:22.784+00:00",
+                                                                            "duration_seconds":  0.066,
+                                                                            "input_summary":  "Question: [STAGE 4 AUTOMATED TEST 20261029_103658] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                                                            "output_summary":  "Status: validated; Updated fields: search_results, total_sources, accepted_sources, rejected_sources, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        },
+                                                                        {
+                                                                            "log_id":  "0a62a9e1-8a5d-4f23-ac4c-cb9ecc576a41",
+                                                                            "task_id":  "2574cfbe-5b3f-4dd0-b3b7-f4e72d815466",
+                                                                            "agent_name":  "Researcher Agent",
+                                                                            "status":  "completed",
+                                                                            "started_at":  "2026-10-29T17:37:01.497+00:00",
+                                                                            "finished_at":  "2026-10-29T17:37:22.672+00:00",
+                                                                            "duration_seconds":  21.175,
+                                                                            "input_summary":  "Question: [STAGE 4 AUTOMATED TEST 20261029_103658] Explain three practical differences between retrieval-augmented generation (RAG) and fine-tuning for AI applications. Use credible sources and include a brief conclusion.",
+                                                                            "output_summary":  "Status: analyzing; Updated fields: search_results, status, error, activity_log",
+                                                                            "error_message":  null
+                                                                        }
+                                                                    ]
+                                                       }
+                                      },
+    "/research/reports":  {
+                              "success":  true,
+                              "total_reports":  19,
+                              "reports":  [
+                                              {
+                                                  "report_filename":  "comparative_analysis_of_retrievalaugmented_generation_rag_and_finetuning_for_ai__20261030_114354.md",
+                                                  "report_size_bytes":  9298,
+                                                  "research_id":  "c58632db-200c-41bb-b14e-628a572f53ad",
+                                                  "research_question":  "Compare RAG and fine-tuning for AI applications. Explain three practical differences and provide credible sources.",
+                                                  "research_timestamp":  "2026-10-30T18:42:42+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "report_title_20261027_102603.md",
+                                                  "report_size_bytes":  13997,
+                                                  "research_id":  "e577cc6d-6b58-43b4-a761-8a5b2a5204ec",
+                                                  "research_question":  "Compare multi-agent AI architectures and recommend the most appropriate designs for practical research and automation systems.",
+                                                  "research_timestamp":  "2026-10-27T17:23:13+00:00",
+                                                  "quality_score":  99
+                                              },
+                                              {
+                                                  "report_filename":  "comparative_analysis_of_centralized_decentralized_and_hierarchical_multiagent_ai_20261027_102312.md",
+                                                  "report_size_bytes":  13815,
+                                                  "research_id":  "e1b112c0-2891-4a9e-bcb6-9b0403060db5",
+                                                  "research_question":  "Compare different multi-agent AI architectures, including centralized, decentralized, and hierarchical approaches.",
+                                                  "research_timestamp":  "2026-10-27T17:20:49+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_101658.md",
+                                                  "report_size_bytes":  14197,
+                                                  "research_id":  "65af0f07-e7a4-4c6f-8326-16eb54709b0a",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "research_timestamp":  "2026-10-27T17:14:34+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "leveraging_multiagent_ai_systems_for_enhanced_business_automation_20261027_020219.md",
+                                                  "report_size_bytes":  15591,
+                                                  "research_id":  "9bc12da5-2834-4b05-b55e-1460e49acfba",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "research_timestamp":  "2026-10-27T08:59:04+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "report_title_20261027_002531.md",
+                                                  "report_size_bytes":  11744,
+                                                  "research_id":  "d67325b2-102b-4fb9-b586-5199bd58c265",
+                                                  "research_question":  "What is AI?",
+                                                  "research_timestamp":  "2026-10-27T07:23:44+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "machine_learning_definitions_evolution_algorithms_applications_and_ethical_consi_20261027_001504.md",
+                                                  "report_size_bytes":  17051,
+                                                  "research_id":  "e6475147-5703-4617-be56-3c29c0ce4d16",
+                                                  "research_question":  "What is Machine learning?",
+                                                  "research_timestamp":  "2026-10-27T07:13:25+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "enhancing_business_automation_through_multiagent_ai_systems_20261027_000659.md",
+                                                  "report_size_bytes":  12531,
+                                                  "research_id":  "549afd4e-a3ef-4693-b1e0-a5fa90e3b907",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "research_timestamp":  "2026-10-27T07:04:48+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_an_evidencebased_analys_20261026_235128.md",
+                                                  "report_size_bytes":  11897,
+                                                  "research_id":  "2583aeec-beb6-4efb-959d-9a3ed986be77",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "research_timestamp":  "2026-10-27T06:49:58+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_121146.md",
+                                                  "report_size_bytes":  13126,
+                                                  "research_id":  "158b53d2-fd32-44c5-b961-108c175d769e",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "research_timestamp":  "2026-10-26T19:09:48+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "enhancing_business_automation_with_multiagent_ai_systems_evidencebased_insights_20261026_015151.md",
+                                                  "report_size_bytes":  15072,
+                                                  "research_id":  "9b9a3cbb-ade1-4c43-9f7c-fd64da4f8d57",
+                                                  "research_question":  "How can multi-agent AI systems improve business automation?",
+                                                  "research_timestamp":  "2026-10-26T08:49:50+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "report_title_20261025_141716.md",
+                                                  "report_size_bytes":  12579,
+                                                  "research_id":  "8e23b5e8-fe3a-40e9-bc3b-ded55dc00296",
+                                                  "research_question":  "What is AI?",
+                                                  "research_timestamp":  "2026-10-25T21:15:04+00:00",
+                                                  "quality_score":  100
+                                              },
+                                              {
+                                                  "report_filename":  "comparative_evaluation_of_retrievalaugmented_generation_rag_and_finetuning_for_a_20261025_115135.md",
+                                                  "report_size_bytes":  15855,
+                                                  "research_id":  "",
+                                                  "research_question":  "",
+                                                  "research_timestamp":  "",
+                                                  "quality_score":  0
+                                              },
+                                              {
+                                                  "report_filename":  "comparative_evaluation_of_retrievalaugmented_generation_rag_and_finetuning_for_a_20261025_122853.md",
+                                                  "report_size_bytes":  12216,
+                                                  "research_id":  "",
+                                                  "research_question":  "",
+                                                  "research_timestamp":  "",
+                                                  "quality_score":  0
+                                              },
+                                              {
+                                                  "report_filename":  "example_ai_research_report_20261025_111953.md",
+                                                  "report_size_bytes":  385,
+                                                  "research_id":  "",
+                                                  "research_question":  "",
+                                                  "research_timestamp":  "",
+                                                  "quality_score":  0
+                                              },
+                                              {
+                                                  "report_filename":  "example_ai_research_report_20261025_113107.md",
+                                                  "report_size_bytes":  385,
+                                                  "research_id":  "",
+                                                  "research_question":  "",
+                                                  "research_timestamp":  "",
+                                                  "quality_score":  0
+                                              },
+                                              {
+                                                  "report_filename":  "machine_learning_foundations_evolution_and_impact__a_comprehensive_research_repo_20261025_132123.md",
+                                                  "report_size_bytes":  14417,
+                                                  "research_id":  "",
+                                                  "research_question":  "",
+                                                  "research_timestamp":  "",
+                                                  "quality_score":  0
+                                              },
+                                              {
+                                                  "report_filename":  "report_title_20261025_114731.md",
+                                                  "report_size_bytes":  11245,
+                                                  "research_id":  "",
+                                                  "research_question":  "",
+                                                  "research_timestamp":  "",
+                                                  "quality_score":  0
+                                              },
+                                              {
+                                                  "report_filename":  "report_title_20261025_125907.md",
+                                                  "report_size_bytes":  12417,
+                                                  "research_id":  "",
+                                                  "research_question":  "",
+                                                  "research_timestamp":  "",
+                                                  "quality_score":  0
+                                              }
+                                          ]
+                          }
+}

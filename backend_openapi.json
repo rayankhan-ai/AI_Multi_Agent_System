@@ -1,0 +1,1553 @@
+{
+    "openapi":  "3.1.0",
+    "info":  {
+                 "title":  "AI Multi-Agent Research and Automation System",
+                 "description":  "Backend API for our multi-agent research system.",
+                 "version":  "0.1.0"
+             },
+    "paths":  {
+                  "/research/history":  {
+                                            "get":  {
+                                                        "summary":  "Research History Endpoint",
+                                                        "description":  "Return the history of previously completed research tasks.",
+                                                        "operationId":  "research_history_endpoint_research_history_get",
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "Successful Response",
+                                                                                      "content":  {
+                                                                                                      "application/json":  {
+                                                                                                                               "schema":  {
+
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                  }
+                                                                                  }
+                                                                      }
+                                                    }
+                                        },
+                  "/research/history/{research_id}":  {
+                                                          "get":  {
+                                                                      "summary":  "Research History Details Endpoint",
+                                                                      "description":  "Return details for one research record.",
+                                                                      "operationId":  "research_history_details_endpoint_research_history__research_id__get",
+                                                                      "parameters":  [
+                                                                                         {
+                                                                                             "name":  "research_id",
+                                                                                             "in":  "path",
+                                                                                             "required":  true,
+                                                                                             "schema":  {
+                                                                                                            "type":  "string",
+                                                                                                            "title":  "Research Id"
+                                                                                                        }
+                                                                                         }
+                                                                                     ],
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "Successful Response",
+                                                                                                    "content":  {
+                                                                                                                    "application/json":  {
+                                                                                                                                             "schema":  {
+
+                                                                                                                                                        }
+                                                                                                                                         }
+                                                                                                                }
+                                                                                                },
+                                                                                        "422":  {
+                                                                                                    "description":  "Validation Error",
+                                                                                                    "content":  {
+                                                                                                                    "application/json":  {
+                                                                                                                                             "schema":  {
+                                                                                                                                                            "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                        }
+                                                                                                                                         }
+                                                                                                                }
+                                                                                                }
+                                                                                    }
+                                                                  }
+                                                      },
+                  "/research/reports":  {
+                                            "get":  {
+                                                        "summary":  "Research Reports Endpoint",
+                                                        "description":  "List all saved Markdown research reports.",
+                                                        "operationId":  "research_reports_endpoint_research_reports_get",
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "Successful Response",
+                                                                                      "content":  {
+                                                                                                      "application/json":  {
+                                                                                                                               "schema":  {
+
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                  }
+                                                                                  }
+                                                                      }
+                                                    }
+                                        },
+                  "/research/reports/{report_filename}":  {
+                                                              "get":  {
+                                                                          "summary":  "Research Report Details Endpoint",
+                                                                          "description":  "Retrieve the full contents of a saved Markdown report.",
+                                                                          "operationId":  "research_report_details_endpoint_research_reports__report_filename__get",
+                                                                          "parameters":  [
+                                                                                             {
+                                                                                                 "name":  "report_filename",
+                                                                                                 "in":  "path",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "string",
+                                                                                                                "title":  "Report Filename"
+                                                                                                            }
+                                                                                             }
+                                                                                         ],
+                                                                          "responses":  {
+                                                                                            "200":  {
+                                                                                                        "description":  "Successful Response",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  {
+                                                                                                                                                 "schema":  {
+
+                                                                                                                                                            }
+                                                                                                                                             }
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "422":  {
+                                                                                                        "description":  "Validation Error",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  {
+                                                                                                                                                 "schema":  {
+                                                                                                                                                                "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                            }
+                                                                                                                                             }
+                                                                                                                    }
+                                                                                                    }
+                                                                                        }
+                                                                      }
+                                                          },
+                  "/research/reports/{report_filename}/download":  {
+                                                                       "get":  {
+                                                                                   "summary":  "Download Research Report Endpoint",
+                                                                                   "description":  "Download a saved Markdown research report.",
+                                                                                   "operationId":  "download_research_report_endpoint_research_reports__report_filename__download_get",
+                                                                                   "parameters":  [
+                                                                                                      {
+                                                                                                          "name":  "report_filename",
+                                                                                                          "in":  "path",
+                                                                                                          "required":  true,
+                                                                                                          "schema":  {
+                                                                                                                         "type":  "string",
+                                                                                                                         "title":  "Report Filename"
+                                                                                                                     }
+                                                                                                      }
+                                                                                                  ],
+                                                                                   "responses":  {
+                                                                                                     "200":  {
+                                                                                                                 "description":  "Successful Response",
+                                                                                                                 "content":  {
+                                                                                                                                 "application/json":  {
+                                                                                                                                                          "schema":  {
+
+                                                                                                                                                                     }
+                                                                                                                                                      }
+                                                                                                                             }
+                                                                                                             },
+                                                                                                     "422":  {
+                                                                                                                 "description":  "Validation Error",
+                                                                                                                 "content":  {
+                                                                                                                                 "application/json":  {
+                                                                                                                                                          "schema":  {
+                                                                                                                                                                         "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                                     }
+                                                                                                                                                      }
+                                                                                                                             }
+                                                                                                             }
+                                                                                                 }
+                                                                               }
+                                                                   },
+                  "/health":  {
+                                  "get":  {
+                                              "summary":  "Health Check",
+                                              "operationId":  "health_check_health_get",
+                                              "responses":  {
+                                                                "200":  {
+                                                                            "description":  "Successful Response",
+                                                                            "content":  {
+                                                                                            "application/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/HealthResponse"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                        }
+                                                                        }
+                                                            }
+                                          }
+                              },
+                  "/":  {
+                            "get":  {
+                                        "summary":  "Root",
+                                        "operationId":  "root__get",
+                                        "responses":  {
+                                                          "200":  {
+                                                                      "description":  "Successful Response",
+                                                                      "content":  {
+                                                                                      "application/json":  {
+                                                                                                               "schema":  {
+
+                                                                                                                          }
+                                                                                                           }
+                                                                                  }
+                                                                  }
+                                                      }
+                                    }
+                        },
+                  "/research/tasks":  {
+                                          "get":  {
+                                                      "summary":  "List Research Tasks Endpoint",
+                                                      "description":  "List all task records.",
+                                                      "operationId":  "list_research_tasks_endpoint_research_tasks_get",
+                                                      "responses":  {
+                                                                        "200":  {
+                                                                                    "description":  "Successful Response",
+                                                                                    "content":  {
+                                                                                                    "application/json":  {
+                                                                                                                             "schema":  {
+
+                                                                                                                                        }
+                                                                                                                         }
+                                                                                                }
+                                                                                }
+                                                                    }
+                                                  },
+                                          "post":  {
+                                                       "summary":  "Create Research Task Endpoint",
+                                                       "description":  "Create a task record for a research question.",
+                                                       "operationId":  "create_research_task_endpoint_research_tasks_post",
+                                                       "requestBody":  {
+                                                                           "content":  {
+                                                                                           "application/json":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "$ref":  "#/components/schemas/ResearchTaskRequest"
+                                                                                                                               }
+                                                                                                                }
+                                                                                       },
+                                                                           "required":  true
+                                                                       },
+                                                       "responses":  {
+                                                                         "201":  {
+                                                                                     "description":  "Successful Response",
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                 }
+                                                                                 },
+                                                                         "422":  {
+                                                                                     "description":  "Validation Error",
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                 }
+                                                                                 }
+                                                                     }
+                                                   }
+                                      },
+                  "/research/tasks/{task_id}":  {
+                                                    "get":  {
+                                                                "summary":  "Get Research Task Endpoint",
+                                                                "description":  "Retrieve one task by its ID.",
+                                                                "operationId":  "get_research_task_endpoint_research_tasks__task_id__get",
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "task_id",
+                                                                                       "in":  "path",
+                                                                                       "required":  true,
+                                                                                       "schema":  {
+                                                                                                      "type":  "string",
+                                                                                                      "title":  "Task Id"
+                                                                                                  }
+                                                                                   }
+                                                                               ],
+                                                                "responses":  {
+                                                                                  "200":  {
+                                                                                              "description":  "Successful Response",
+                                                                                              "content":  {
+                                                                                                              "application/json":  {
+                                                                                                                                       "schema":  {
+
+                                                                                                                                                  }
+                                                                                                                                   }
+                                                                                                          }
+                                                                                          },
+                                                                                  "422":  {
+                                                                                              "description":  "Validation Error",
+                                                                                              "content":  {
+                                                                                                              "application/json":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                  }
+                                                                                                                                   }
+                                                                                                          }
+                                                                                          }
+                                                                              }
+                                                            }
+                                                },
+                  "/research/tasks/{task_id}/execute":  {
+                                                            "post":  {
+                                                                         "summary":  "Execute Research Task Endpoint",
+                                                                         "description":  "Start a pending task or retry a failed task.\n\nA task cannot execute until all its prerequisite tasks\nhave completed successfully.",
+                                                                         "operationId":  "execute_research_task_endpoint_research_tasks__task_id__execute_post",
+                                                                         "parameters":  [
+                                                                                            {
+                                                                                                "name":  "task_id",
+                                                                                                "in":  "path",
+                                                                                                "required":  true,
+                                                                                                "schema":  {
+                                                                                                               "type":  "string",
+                                                                                                               "title":  "Task Id"
+                                                                                                           }
+                                                                                            }
+                                                                                        ],
+                                                                         "responses":  {
+                                                                                           "200":  {
+                                                                                                       "description":  "Successful Response",
+                                                                                                       "content":  {
+                                                                                                                       "application/json":  {
+                                                                                                                                                "schema":  {
+
+                                                                                                                                                           }
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                   },
+                                                                                           "422":  {
+                                                                                                       "description":  "Validation Error",
+                                                                                                       "content":  {
+                                                                                                                       "application/json":  {
+                                                                                                                                                "schema":  {
+                                                                                                                                                               "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                           }
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                   }
+                                                                                       }
+                                                                     }
+                                                        },
+                  "/research/tasks/{task_id}/agent-logs":  {
+                                                               "get":  {
+                                                                           "summary":  "Get Task Agent Logs Endpoint",
+                                                                           "description":  "Retrieve agent execution logs for one task.",
+                                                                           "operationId":  "get_task_agent_logs_endpoint_research_tasks__task_id__agent_logs_get",
+                                                                           "parameters":  [
+                                                                                              {
+                                                                                                  "name":  "task_id",
+                                                                                                  "in":  "path",
+                                                                                                  "required":  true,
+                                                                                                  "schema":  {
+                                                                                                                 "type":  "string",
+                                                                                                                 "title":  "Task Id"
+                                                                                                             }
+                                                                                              }
+                                                                                          ],
+                                                                           "responses":  {
+                                                                                             "200":  {
+                                                                                                         "description":  "Successful Response",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  {
+                                                                                                                                                  "schema":  {
+
+                                                                                                                                                             }
+                                                                                                                                              }
+                                                                                                                     }
+                                                                                                     },
+                                                                                             "422":  {
+                                                                                                         "description":  "Validation Error",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  {
+                                                                                                                                                  "schema":  {
+                                                                                                                                                                 "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                             }
+                                                                                                                                              }
+                                                                                                                     }
+                                                                                                     }
+                                                                                         }
+                                                                       }
+                                                           },
+                  "/research/agent-logs":  {
+                                               "get":  {
+                                                           "summary":  "Get Recent Agent Logs Endpoint",
+                                                           "description":  "Retrieve recent agent execution logs.",
+                                                           "operationId":  "get_recent_agent_logs_endpoint_research_agent_logs_get",
+                                                           "parameters":  [
+                                                                              {
+                                                                                  "name":  "limit",
+                                                                                  "in":  "query",
+                                                                                  "required":  false,
+                                                                                  "schema":  {
+                                                                                                 "type":  "integer",
+                                                                                                 "default":  100,
+                                                                                                 "title":  "Limit"
+                                                                                             }
+                                                                              }
+                                                                          ],
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "Successful Response",
+                                                                                         "content":  {
+                                                                                                         "application/json":  {
+                                                                                                                                  "schema":  {
+
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                     }
+                                                                                     },
+                                                                             "422":  {
+                                                                                         "description":  "Validation Error",
+                                                                                         "content":  {
+                                                                                                         "application/json":  {
+                                                                                                                                  "schema":  {
+                                                                                                                                                 "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                     }
+                                                                                     }
+                                                                         }
+                                                       }
+                                           },
+                  "/research/analytics/agents":  {
+                                                     "get":  {
+                                                                 "summary":  "Get Agent Analytics Endpoint",
+                                                                 "operationId":  "get_agent_analytics_endpoint_research_analytics_agents_get",
+                                                                 "responses":  {
+                                                                                   "200":  {
+                                                                                               "description":  "Successful Response",
+                                                                                               "content":  {
+                                                                                                               "application/json":  {
+                                                                                                                                        "schema":  {
+
+                                                                                                                                                   }
+                                                                                                                                    }
+                                                                                                           }
+                                                                                           }
+                                                                               }
+                                                             }
+                                                 },
+                  "/research/tasks/{task_id}/analytics":  {
+                                                              "get":  {
+                                                                          "summary":  "Get Task Analytics Endpoint",
+                                                                          "operationId":  "get_task_analytics_endpoint_research_tasks__task_id__analytics_get",
+                                                                          "parameters":  [
+                                                                                             {
+                                                                                                 "name":  "task_id",
+                                                                                                 "in":  "path",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "string",
+                                                                                                                "title":  "Task Id"
+                                                                                                            }
+                                                                                             }
+                                                                                         ],
+                                                                          "responses":  {
+                                                                                            "200":  {
+                                                                                                        "description":  "Successful Response",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  {
+                                                                                                                                                 "schema":  {
+
+                                                                                                                                                            }
+                                                                                                                                             }
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "422":  {
+                                                                                                        "description":  "Validation Error",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  {
+                                                                                                                                                 "schema":  {
+                                                                                                                                                                "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                            }
+                                                                                                                                             }
+                                                                                                                    }
+                                                                                                    }
+                                                                                        }
+                                                                      }
+                                                          },
+                  "/research/traces/{trace_id}":  {
+                                                      "get":  {
+                                                                  "summary":  "Get Workflow Trace Endpoint",
+                                                                  "operationId":  "get_workflow_trace_endpoint_research_traces__trace_id__get",
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "trace_id",
+                                                                                         "in":  "path",
+                                                                                         "required":  true,
+                                                                                         "schema":  {
+                                                                                                        "type":  "string",
+                                                                                                        "title":  "Trace Id"
+                                                                                                    }
+                                                                                     }
+                                                                                 ],
+                                                                  "responses":  {
+                                                                                    "200":  {
+                                                                                                "description":  "Successful Response",
+                                                                                                "content":  {
+                                                                                                                "application/json":  {
+                                                                                                                                         "schema":  {
+
+                                                                                                                                                    }
+                                                                                                                                     }
+                                                                                                            }
+                                                                                            },
+                                                                                    "422":  {
+                                                                                                "description":  "Validation Error",
+                                                                                                "content":  {
+                                                                                                                "application/json":  {
+                                                                                                                                         "schema":  {
+                                                                                                                                                        "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                    }
+                                                                                                                                     }
+                                                                                                            }
+                                                                                            }
+                                                                                }
+                                                              }
+                                                  },
+                  "/research/tasks/{task_id}/traces":  {
+                                                           "get":  {
+                                                                       "summary":  "Get Task Workflow Traces Endpoint",
+                                                                       "operationId":  "get_task_workflow_traces_endpoint_research_tasks__task_id__traces_get",
+                                                                       "parameters":  [
+                                                                                          {
+                                                                                              "name":  "task_id",
+                                                                                              "in":  "path",
+                                                                                              "required":  true,
+                                                                                              "schema":  {
+                                                                                                             "type":  "string",
+                                                                                                             "title":  "Task Id"
+                                                                                                         }
+                                                                                          }
+                                                                                      ],
+                                                                       "responses":  {
+                                                                                         "200":  {
+                                                                                                     "description":  "Successful Response",
+                                                                                                     "content":  {
+                                                                                                                     "application/json":  {
+                                                                                                                                              "schema":  {
+
+                                                                                                                                                         }
+                                                                                                                                          }
+                                                                                                                 }
+                                                                                                 },
+                                                                                         "422":  {
+                                                                                                     "description":  "Validation Error",
+                                                                                                     "content":  {
+                                                                                                                     "application/json":  {
+                                                                                                                                              "schema":  {
+                                                                                                                                                             "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                         }
+                                                                                                                                          }
+                                                                                                                 }
+                                                                                                 }
+                                                                                     }
+                                                                   }
+                                                       },
+                  "/research/monitoring/overview":  {
+                                                        "get":  {
+                                                                    "summary":  "Get System Overview Endpoint",
+                                                                    "description":  "Return combined task, agent, and workflow statistics.",
+                                                                    "operationId":  "get_system_overview_endpoint_research_monitoring_overview_get",
+                                                                    "responses":  {
+                                                                                      "200":  {
+                                                                                                  "description":  "Successful Response",
+                                                                                                  "content":  {
+                                                                                                                  "application/json":  {
+                                                                                                                                           "schema":  {
+
+                                                                                                                                                      }
+                                                                                                                                       }
+                                                                                                              }
+                                                                                              }
+                                                                                  }
+                                                                }
+                                                    },
+                  "/research/monitoring/activity":  {
+                                                        "get":  {
+                                                                    "summary":  "Get Recent System Activity Endpoint",
+                                                                    "description":  "Return recent agent execution activity.",
+                                                                    "operationId":  "get_recent_system_activity_endpoint_research_monitoring_activity_get",
+                                                                    "parameters":  [
+                                                                                       {
+                                                                                           "name":  "limit",
+                                                                                           "in":  "query",
+                                                                                           "required":  false,
+                                                                                           "schema":  {
+                                                                                                          "type":  "integer",
+                                                                                                          "default":  20,
+                                                                                                          "title":  "Limit"
+                                                                                                      }
+                                                                                       }
+                                                                                   ],
+                                                                    "responses":  {
+                                                                                      "200":  {
+                                                                                                  "description":  "Successful Response",
+                                                                                                  "content":  {
+                                                                                                                  "application/json":  {
+                                                                                                                                           "schema":  {
+
+                                                                                                                                                      }
+                                                                                                                                       }
+                                                                                                              }
+                                                                                              },
+                                                                                      "422":  {
+                                                                                                  "description":  "Validation Error",
+                                                                                                  "content":  {
+                                                                                                                  "application/json":  {
+                                                                                                                                           "schema":  {
+                                                                                                                                                          "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                      }
+                                                                                                                                       }
+                                                                                                              }
+                                                                                              }
+                                                                                  }
+                                                                }
+                                                    },
+                  "/research/tasks/{task_id}/diagnostics":  {
+                                                                "get":  {
+                                                                            "summary":  "Get Task Diagnostics Endpoint",
+                                                                            "description":  "Return the agent logs and workflow traces for a task.",
+                                                                            "operationId":  "get_task_diagnostics_endpoint_research_tasks__task_id__diagnostics_get",
+                                                                            "parameters":  [
+                                                                                               {
+                                                                                                   "name":  "task_id",
+                                                                                                   "in":  "path",
+                                                                                                   "required":  true,
+                                                                                                   "schema":  {
+                                                                                                                  "type":  "string",
+                                                                                                                  "title":  "Task Id"
+                                                                                                              }
+                                                                                               }
+                                                                                           ],
+                                                                            "responses":  {
+                                                                                              "200":  {
+                                                                                                          "description":  "Successful Response",
+                                                                                                          "content":  {
+                                                                                                                          "application/json":  {
+                                                                                                                                                   "schema":  {
+
+                                                                                                                                                              }
+                                                                                                                                               }
+                                                                                                                      }
+                                                                                                      },
+                                                                                              "422":  {
+                                                                                                          "description":  "Validation Error",
+                                                                                                          "content":  {
+                                                                                                                          "application/json":  {
+                                                                                                                                                   "schema":  {
+                                                                                                                                                                  "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                              }
+                                                                                                                                               }
+                                                                                                                      }
+                                                                                                      }
+                                                                                          }
+                                                                        }
+                                                            },
+                  "/research/retries":  {
+                                            "get":  {
+                                                        "summary":  "Get Retry History Endpoint",
+                                                        "description":  "Retrieve retry records, optionally filtered by task.",
+                                                        "operationId":  "get_retry_history_endpoint_research_retries_get",
+                                                        "parameters":  [
+                                                                           {
+                                                                               "name":  "task_id",
+                                                                               "in":  "query",
+                                                                               "required":  false,
+                                                                               "schema":  {
+                                                                                              "type":  "string",
+                                                                                              "default":  "",
+                                                                                              "title":  "Task Id"
+                                                                                          }
+                                                                           },
+                                                                           {
+                                                                               "name":  "limit",
+                                                                               "in":  "query",
+                                                                               "required":  false,
+                                                                               "schema":  {
+                                                                                              "type":  "integer",
+                                                                                              "default":  100,
+                                                                                              "title":  "Limit"
+                                                                                          }
+                                                                           }
+                                                                       ],
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "Successful Response",
+                                                                                      "content":  {
+                                                                                                      "application/json":  {
+                                                                                                                               "schema":  {
+
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                  }
+                                                                                  },
+                                                                          "422":  {
+                                                                                      "description":  "Validation Error",
+                                                                                      "content":  {
+                                                                                                      "application/json":  {
+                                                                                                                               "schema":  {
+                                                                                                                                              "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                  }
+                                                                                  }
+                                                                      }
+                                                    }
+                                        },
+                  "/research/retries/statistics":  {
+                                                       "get":  {
+                                                                   "summary":  "Get Retry Statistics Endpoint",
+                                                                   "description":  "Return aggregate retry statistics.",
+                                                                   "operationId":  "get_retry_statistics_endpoint_research_retries_statistics_get",
+                                                                   "responses":  {
+                                                                                     "200":  {
+                                                                                                 "description":  "Successful Response",
+                                                                                                 "content":  {
+                                                                                                                 "application/json":  {
+                                                                                                                                          "schema":  {
+
+                                                                                                                                                     }
+                                                                                                                                      }
+                                                                                                             }
+                                                                                             }
+                                                                                 }
+                                                               }
+                                                   },
+                  "/research/tasks/{task_id}/priority":  {
+                                                             "patch":  {
+                                                                           "summary":  "Update Research Task Priority Endpoint",
+                                                                           "description":  "Change a research task\u0027s priority.",
+                                                                           "operationId":  "update_research_task_priority_endpoint_research_tasks__task_id__priority_patch",
+                                                                           "parameters":  [
+                                                                                              {
+                                                                                                  "name":  "task_id",
+                                                                                                  "in":  "path",
+                                                                                                  "required":  true,
+                                                                                                  "schema":  {
+                                                                                                                 "type":  "string",
+                                                                                                                 "title":  "Task Id"
+                                                                                                             }
+                                                                                              }
+                                                                                          ],
+                                                                           "requestBody":  {
+                                                                                               "required":  true,
+                                                                                               "content":  {
+                                                                                                               "application/json":  {
+                                                                                                                                        "schema":  {
+                                                                                                                                                       "type":  "object",
+                                                                                                                                                       "additionalProperties":  true,
+                                                                                                                                                       "title":  "Request"
+                                                                                                                                                   }
+                                                                                                                                    }
+                                                                                                           }
+                                                                                           },
+                                                                           "responses":  {
+                                                                                             "200":  {
+                                                                                                         "description":  "Successful Response",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  {
+                                                                                                                                                  "schema":  {
+
+                                                                                                                                                             }
+                                                                                                                                              }
+                                                                                                                     }
+                                                                                                     },
+                                                                                             "422":  {
+                                                                                                         "description":  "Validation Error",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  {
+                                                                                                                                                  "schema":  {
+                                                                                                                                                                 "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                             }
+                                                                                                                                              }
+                                                                                                                     }
+                                                                                                     }
+                                                                                         }
+                                                                       },
+                                                             "get":  {
+                                                                         "summary":  "Get Research Task Priority Endpoint",
+                                                                         "description":  "Retrieve a task\u0027s priority and numerical score.",
+                                                                         "operationId":  "get_research_task_priority_endpoint_research_tasks__task_id__priority_get",
+                                                                         "parameters":  [
+                                                                                            {
+                                                                                                "name":  "task_id",
+                                                                                                "in":  "path",
+                                                                                                "required":  true,
+                                                                                                "schema":  {
+                                                                                                               "type":  "string",
+                                                                                                               "title":  "Task Id"
+                                                                                                           }
+                                                                                            }
+                                                                                        ],
+                                                                         "responses":  {
+                                                                                           "200":  {
+                                                                                                       "description":  "Successful Response",
+                                                                                                       "content":  {
+                                                                                                                       "application/json":  {
+                                                                                                                                                "schema":  {
+
+                                                                                                                                                           }
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                   },
+                                                                                           "422":  {
+                                                                                                       "description":  "Validation Error",
+                                                                                                       "content":  {
+                                                                                                                       "application/json":  {
+                                                                                                                                                "schema":  {
+                                                                                                                                                               "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                           }
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                   }
+                                                                                       }
+                                                                     }
+                                                         },
+                  "/research/tasks-by-priority":  {
+                                                      "get":  {
+                                                                  "summary":  "List Tasks By Priority Endpoint",
+                                                                  "description":  "List tasks from highest to lowest priority.",
+                                                                  "operationId":  "list_tasks_by_priority_endpoint_research_tasks_by_priority_get",
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "status",
+                                                                                         "in":  "query",
+                                                                                         "required":  false,
+                                                                                         "schema":  {
+                                                                                                        "type":  "string",
+                                                                                                        "default":  "pending",
+                                                                                                        "title":  "Status"
+                                                                                                    }
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "limit",
+                                                                                         "in":  "query",
+                                                                                         "required":  false,
+                                                                                         "schema":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "default":  100,
+                                                                                                        "title":  "Limit"
+                                                                                                    }
+                                                                                     }
+                                                                                 ],
+                                                                  "responses":  {
+                                                                                    "200":  {
+                                                                                                "description":  "Successful Response",
+                                                                                                "content":  {
+                                                                                                                "application/json":  {
+                                                                                                                                         "schema":  {
+
+                                                                                                                                                    }
+                                                                                                                                     }
+                                                                                                            }
+                                                                                            },
+                                                                                    "422":  {
+                                                                                                "description":  "Validation Error",
+                                                                                                "content":  {
+                                                                                                                "application/json":  {
+                                                                                                                                         "schema":  {
+                                                                                                                                                        "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                    }
+                                                                                                                                     }
+                                                                                                            }
+                                                                                            }
+                                                                                }
+                                                              }
+                                                  },
+                  "/research/priorities/statistics":  {
+                                                          "get":  {
+                                                                      "summary":  "Get Priority Statistics Endpoint",
+                                                                      "description":  "Return task counts grouped by priority.",
+                                                                      "operationId":  "get_priority_statistics_endpoint_research_priorities_statistics_get",
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "Successful Response",
+                                                                                                    "content":  {
+                                                                                                                    "application/json":  {
+                                                                                                                                             "schema":  {
+
+                                                                                                                                                        }
+                                                                                                                                         }
+                                                                                                                }
+                                                                                                }
+                                                                                    }
+                                                                  }
+                                                      },
+                  "/scheduler/next-task":  {
+                                               "get":  {
+                                                           "summary":  "Get Next Scheduled Task Endpoint",
+                                                           "description":  "Preview the highest-priority pending task.\nThis endpoint does not reserve or execute the task.",
+                                                           "operationId":  "get_next_scheduled_task_endpoint_scheduler_next_task_get",
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "Successful Response",
+                                                                                         "content":  {
+                                                                                                         "application/json":  {
+                                                                                                                                  "schema":  {
+
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                     }
+                                                                                     }
+                                                                         }
+                                                       }
+                                           },
+                  "/scheduler/queue":  {
+                                           "get":  {
+                                                       "summary":  "Get Scheduled Task Queue Endpoint",
+                                                       "description":  "Return pending research tasks in priority order.",
+                                                       "operationId":  "get_scheduled_task_queue_endpoint_scheduler_queue_get",
+                                                       "parameters":  [
+                                                                          {
+                                                                              "name":  "limit",
+                                                                              "in":  "query",
+                                                                              "required":  false,
+                                                                              "schema":  {
+                                                                                             "type":  "integer",
+                                                                                             "default":  100,
+                                                                                             "title":  "Limit"
+                                                                                         }
+                                                                          }
+                                                                      ],
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "Successful Response",
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                 }
+                                                                                 },
+                                                                         "422":  {
+                                                                                     "description":  "Validation Error",
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                 }
+                                                                                 }
+                                                                     }
+                                                   }
+                                       },
+                  "/scheduler/status":  {
+                                            "get":  {
+                                                        "summary":  "Get Scheduler Status Endpoint",
+                                                        "description":  "Return pending task counts for each priority level.",
+                                                        "operationId":  "get_scheduler_status_endpoint_scheduler_status_get",
+                                                        "responses":  {
+                                                                          "200":  {
+                                                                                      "description":  "Successful Response",
+                                                                                      "content":  {
+                                                                                                      "application/json":  {
+                                                                                                                               "schema":  {
+
+                                                                                                                                          }
+                                                                                                                           }
+                                                                                                  }
+                                                                                  }
+                                                                      }
+                                                    }
+                                        },
+                  "/scheduler/run-next":  {
+                                              "post":  {
+                                                           "summary":  "Run Next Scheduled Task Endpoint",
+                                                           "description":  "Select the highest-priority pending task and schedule its execution.\n\nThe existing task manager reserves the task before execution.",
+                                                           "operationId":  "run_next_scheduled_task_endpoint_scheduler_run_next_post",
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "Successful Response",
+                                                                                         "content":  {
+                                                                                                         "application/json":  {
+                                                                                                                                  "schema":  {
+
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                     }
+                                                                                     }
+                                                                         }
+                                                       }
+                                          },
+                  "/scheduler/worker/start":  {
+                                                  "post":  {
+                                                               "summary":  "Start Scheduler Worker Endpoint",
+                                                               "description":  "Start automatic priority-based task processing.",
+                                                               "operationId":  "start_scheduler_worker_endpoint_scheduler_worker_start_post",
+                                                               "responses":  {
+                                                                                 "200":  {
+                                                                                             "description":  "Successful Response",
+                                                                                             "content":  {
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                         }
+                                                                                         }
+                                                                             }
+                                                           }
+                                              },
+                  "/scheduler/worker/stop":  {
+                                                 "post":  {
+                                                              "summary":  "Stop Scheduler Worker Endpoint",
+                                                              "description":  "Ask the worker to stop after its current task finishes.",
+                                                              "operationId":  "stop_scheduler_worker_endpoint_scheduler_worker_stop_post",
+                                                              "responses":  {
+                                                                                "200":  {
+                                                                                            "description":  "Successful Response",
+                                                                                            "content":  {
+                                                                                                            "application/json":  {
+                                                                                                                                     "schema":  {
+
+                                                                                                                                                }
+                                                                                                                                 }
+                                                                                                        }
+                                                                                        }
+                                                                            }
+                                                          }
+                                             },
+                  "/scheduler/worker/status":  {
+                                                   "get":  {
+                                                               "summary":  "Scheduler Worker Status Endpoint",
+                                                               "description":  "Return the current automatic worker status.",
+                                                               "operationId":  "scheduler_worker_status_endpoint_scheduler_worker_status_get",
+                                                               "responses":  {
+                                                                                 "200":  {
+                                                                                             "description":  "Successful Response",
+                                                                                             "content":  {
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                         }
+                                                                                         }
+                                                                             }
+                                                           }
+                                               },
+                  "/research/tasks/{task_id}/dependencies":  {
+                                                                 "post":  {
+                                                                              "summary":  "Add Task Dependency Endpoint",
+                                                                              "description":  "Add a prerequisite task to a research task.",
+                                                                              "operationId":  "add_task_dependency_endpoint_research_tasks__task_id__dependencies_post",
+                                                                              "parameters":  [
+                                                                                                 {
+                                                                                                     "name":  "task_id",
+                                                                                                     "in":  "path",
+                                                                                                     "required":  true,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "string",
+                                                                                                                    "title":  "Task Id"
+                                                                                                                }
+                                                                                                 }
+                                                                                             ],
+                                                                              "requestBody":  {
+                                                                                                  "required":  true,
+                                                                                                  "content":  {
+                                                                                                                  "application/json":  {
+                                                                                                                                           "schema":  {
+                                                                                                                                                          "$ref":  "#/components/schemas/TaskDependencyRequest"
+                                                                                                                                                      }
+                                                                                                                                       }
+                                                                                                              }
+                                                                                              },
+                                                                              "responses":  {
+                                                                                                "200":  {
+                                                                                                            "description":  "Successful Response",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  {
+                                                                                                                                                     "schema":  {
+
+                                                                                                                                                                }
+                                                                                                                                                 }
+                                                                                                                        }
+                                                                                                        },
+                                                                                                "422":  {
+                                                                                                            "description":  "Validation Error",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  {
+                                                                                                                                                     "schema":  {
+                                                                                                                                                                    "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                                }
+                                                                                                                                                 }
+                                                                                                                        }
+                                                                                                        }
+                                                                                            }
+                                                                          },
+                                                                 "get":  {
+                                                                             "summary":  "Get Task Dependencies Endpoint",
+                                                                             "description":  "Retrieve the prerequisites of a research task.",
+                                                                             "operationId":  "get_task_dependencies_endpoint_research_tasks__task_id__dependencies_get",
+                                                                             "parameters":  [
+                                                                                                {
+                                                                                                    "name":  "task_id",
+                                                                                                    "in":  "path",
+                                                                                                    "required":  true,
+                                                                                                    "schema":  {
+                                                                                                                   "type":  "string",
+                                                                                                                   "title":  "Task Id"
+                                                                                                               }
+                                                                                                }
+                                                                                            ],
+                                                                             "responses":  {
+                                                                                               "200":  {
+                                                                                                           "description":  "Successful Response",
+                                                                                                           "content":  {
+                                                                                                                           "application/json":  {
+                                                                                                                                                    "schema":  {
+
+                                                                                                                                                               }
+                                                                                                                                                }
+                                                                                                                       }
+                                                                                                       },
+                                                                                               "422":  {
+                                                                                                           "description":  "Validation Error",
+                                                                                                           "content":  {
+                                                                                                                           "application/json":  {
+                                                                                                                                                    "schema":  {
+                                                                                                                                                                   "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                               }
+                                                                                                                                                }
+                                                                                                                       }
+                                                                                                       }
+                                                                                           }
+                                                                         }
+                                                             },
+                  "/research/tasks/{task_id}/dependency-status":  {
+                                                                      "get":  {
+                                                                                  "summary":  "Check Task Dependencies Endpoint",
+                                                                                  "description":  "Check whether all prerequisites are complete.",
+                                                                                  "operationId":  "check_task_dependencies_endpoint_research_tasks__task_id__dependency_status_get",
+                                                                                  "parameters":  [
+                                                                                                     {
+                                                                                                         "name":  "task_id",
+                                                                                                         "in":  "path",
+                                                                                                         "required":  true,
+                                                                                                         "schema":  {
+                                                                                                                        "type":  "string",
+                                                                                                                        "title":  "Task Id"
+                                                                                                                    }
+                                                                                                     }
+                                                                                                 ],
+                                                                                  "responses":  {
+                                                                                                    "200":  {
+                                                                                                                "description":  "Successful Response",
+                                                                                                                "content":  {
+                                                                                                                                "application/json":  {
+                                                                                                                                                         "schema":  {
+
+                                                                                                                                                                    }
+                                                                                                                                                     }
+                                                                                                                            }
+                                                                                                            },
+                                                                                                    "422":  {
+                                                                                                                "description":  "Validation Error",
+                                                                                                                "content":  {
+                                                                                                                                "application/json":  {
+                                                                                                                                                         "schema":  {
+                                                                                                                                                                        "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                                    }
+                                                                                                                                                     }
+                                                                                                                            }
+                                                                                                            }
+                                                                                                }
+                                                                              }
+                                                                  },
+                  "/research/tasks-ready":  {
+                                                "get":  {
+                                                            "summary":  "Get Ready Tasks Endpoint",
+                                                            "description":  "List pending tasks whose prerequisites are complete.",
+                                                            "operationId":  "get_ready_tasks_endpoint_research_tasks_ready_get",
+                                                            "parameters":  [
+                                                                               {
+                                                                                   "name":  "limit",
+                                                                                   "in":  "query",
+                                                                                   "required":  false,
+                                                                                   "schema":  {
+                                                                                                  "type":  "integer",
+                                                                                                  "default":  100,
+                                                                                                  "title":  "Limit"
+                                                                                              }
+                                                                               }
+                                                                           ],
+                                                            "responses":  {
+                                                                              "200":  {
+                                                                                          "description":  "Successful Response",
+                                                                                          "content":  {
+                                                                                                          "application/json":  {
+                                                                                                                                   "schema":  {
+
+                                                                                                                                              }
+                                                                                                                               }
+                                                                                                      }
+                                                                                      },
+                                                                              "422":  {
+                                                                                          "description":  "Validation Error",
+                                                                                          "content":  {
+                                                                                                          "application/json":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                              }
+                                                                                                                               }
+                                                                                                      }
+                                                                                      }
+                                                                          }
+                                                        }
+                                            },
+                  "/workflow/overview":  {
+                                             "get":  {
+                                                         "summary":  "Workflow Overview Endpoint",
+                                                         "description":  "Return an overview of research tasks, priorities,\ndependencies, and execution readiness.",
+                                                         "operationId":  "workflow_overview_endpoint_workflow_overview_get",
+                                                         "responses":  {
+                                                                           "200":  {
+                                                                                       "description":  "Successful Response",
+                                                                                       "content":  {
+                                                                                                       "application/json":  {
+                                                                                                                                "schema":  {
+
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                   }
+                                                                                   }
+                                                                       }
+                                                     }
+                                         },
+                  "/workflow/statistics":  {
+                                               "get":  {
+                                                           "summary":  "Workflow Statistics Endpoint",
+                                                           "description":  "Return task counts, priorities, readiness, and completion.",
+                                                           "operationId":  "workflow_statistics_endpoint_workflow_statistics_get",
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "Successful Response",
+                                                                                         "content":  {
+                                                                                                         "application/json":  {
+                                                                                                                                  "schema":  {
+
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                     }
+                                                                                     }
+                                                                         }
+                                                       }
+                                           },
+                  "/workflow/health":  {
+                                           "get":  {
+                                                       "summary":  "Workflow Health Endpoint",
+                                                       "description":  "Return the health status of the research workflow.",
+                                                       "operationId":  "workflow_health_endpoint_workflow_health_get",
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "Successful Response",
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                 }
+                                                                                 }
+                                                                     }
+                                                   }
+                                       },
+                  "/workflow/audit-history":  {
+                                                  "get":  {
+                                                              "summary":  "Workflow Audit History Endpoint",
+                                                              "description":  "Return a page of filtered workflow audit records.",
+                                                              "operationId":  "workflow_audit_history_endpoint_workflow_audit_history_get",
+                                                              "parameters":  [
+                                                                                 {
+                                                                                     "name":  "limit",
+                                                                                     "in":  "query",
+                                                                                     "required":  false,
+                                                                                     "schema":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "default":  20,
+                                                                                                    "title":  "Limit"
+                                                                                                }
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "page",
+                                                                                     "in":  "query",
+                                                                                     "required":  false,
+                                                                                     "schema":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "default":  1,
+                                                                                                    "title":  "Page"
+                                                                                                }
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "status",
+                                                                                     "in":  "query",
+                                                                                     "required":  false,
+                                                                                     "schema":  {
+                                                                                                    "anyOf":  [
+                                                                                                                  {
+                                                                                                                      "type":  "string"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "type":  "null"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                    "title":  "Status"
+                                                                                                }
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "priority",
+                                                                                     "in":  "query",
+                                                                                     "required":  false,
+                                                                                     "schema":  {
+                                                                                                    "anyOf":  [
+                                                                                                                  {
+                                                                                                                      "type":  "string"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "type":  "null"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                    "title":  "Priority"
+                                                                                                }
+                                                                                 },
+                                                                                 {
+                                                                                     "name":  "search",
+                                                                                     "in":  "query",
+                                                                                     "required":  false,
+                                                                                     "schema":  {
+                                                                                                    "anyOf":  [
+                                                                                                                  {
+                                                                                                                      "type":  "string"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "type":  "null"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                    "title":  "Search"
+                                                                                                }
+                                                                                 }
+                                                                             ],
+                                                              "responses":  {
+                                                                                "200":  {
+                                                                                            "description":  "Successful Response",
+                                                                                            "content":  {
+                                                                                                            "application/json":  {
+                                                                                                                                     "schema":  {
+
+                                                                                                                                                }
+                                                                                                                                 }
+                                                                                                        }
+                                                                                        },
+                                                                                "422":  {
+                                                                                            "description":  "Validation Error",
+                                                                                            "content":  {
+                                                                                                            "application/json":  {
+                                                                                                                                     "schema":  {
+                                                                                                                                                    "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                }
+                                                                                                                                 }
+                                                                                                        }
+                                                                                        }
+                                                                            }
+                                                          }
+                                              },
+                  "/workflow/audit-history/export":  {
+                                                         "get":  {
+                                                                     "summary":  "Export Workflow Audit History Endpoint",
+                                                                     "description":  "Export matching workflow audit records as a CSV file.\n\n\nThis endpoint exports all matching records, up to the\nexisting audit-history service\u0027s maximum page size per call.",
+                                                                     "operationId":  "export_workflow_audit_history_endpoint_workflow_audit_history_export_get",
+                                                                     "parameters":  [
+                                                                                        {
+                                                                                            "name":  "status",
+                                                                                            "in":  "query",
+                                                                                            "required":  false,
+                                                                                            "schema":  {
+                                                                                                           "anyOf":  [
+                                                                                                                         {
+                                                                                                                             "type":  "string"
+                                                                                                                         },
+                                                                                                                         {
+                                                                                                                             "type":  "null"
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                           "title":  "Status"
+                                                                                                       }
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "priority",
+                                                                                            "in":  "query",
+                                                                                            "required":  false,
+                                                                                            "schema":  {
+                                                                                                           "anyOf":  [
+                                                                                                                         {
+                                                                                                                             "type":  "string"
+                                                                                                                         },
+                                                                                                                         {
+                                                                                                                             "type":  "null"
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                           "title":  "Priority"
+                                                                                                       }
+                                                                                        },
+                                                                                        {
+                                                                                            "name":  "search",
+                                                                                            "in":  "query",
+                                                                                            "required":  false,
+                                                                                            "schema":  {
+                                                                                                           "anyOf":  [
+                                                                                                                         {
+                                                                                                                             "type":  "string"
+                                                                                                                         },
+                                                                                                                         {
+                                                                                                                             "type":  "null"
+                                                                                                                         }
+                                                                                                                     ],
+                                                                                                           "title":  "Search"
+                                                                                                       }
+                                                                                        }
+                                                                                    ],
+                                                                     "responses":  {
+                                                                                       "200":  {
+                                                                                                   "description":  "Successful Response",
+                                                                                                   "content":  {
+                                                                                                                   "application/json":  {
+                                                                                                                                            "schema":  {
+
+                                                                                                                                                       }
+                                                                                                                                        }
+                                                                                                               }
+                                                                                               },
+                                                                                       "422":  {
+                                                                                                   "description":  "Validation Error",
+                                                                                                   "content":  {
+                                                                                                                   "application/json":  {
+                                                                                                                                            "schema":  {
+                                                                                                                                                           "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                       }
+                                                                                                                                        }
+                                                                                                               }
+                                                                                               }
+                                                                                   }
+                                                                 }
+                                                     }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "HTTPValidationError":  {
+                                                                   "properties":  {
+                                                                                      "detail":  {
+                                                                                                     "items":  {
+                                                                                                                   "$ref":  "#/components/schemas/ValidationError"
+                                                                                                               },
+                                                                                                     "type":  "array",
+                                                                                                     "title":  "Detail"
+                                                                                                 }
+                                                                                  },
+                                                                   "type":  "object",
+                                                                   "title":  "HTTPValidationError"
+                                                               },
+                                       "HealthResponse":  {
+                                                              "properties":  {
+                                                                                 "status":  {
+                                                                                                "type":  "string",
+                                                                                                "title":  "Status"
+                                                                                            },
+                                                                                 "message":  {
+                                                                                                 "type":  "string",
+                                                                                                 "title":  "Message"
+                                                                                             }
+                                                                             },
+                                                              "type":  "object",
+                                                              "required":  [
+                                                                               "status",
+                                                                               "message"
+                                                                           ],
+                                                              "title":  "HealthResponse"
+                                                          },
+                                       "ResearchTaskRequest":  {
+                                                                   "properties":  {
+                                                                                      "research_question":  {
+                                                                                                                "type":  "string",
+                                                                                                                "maxLength":  2000,
+                                                                                                                "minLength":  5,
+                                                                                                                "title":  "Research Question",
+                                                                                                                "description":  "The research question to track."
+                                                                                                            }
+                                                                                  },
+                                                                   "type":  "object",
+                                                                   "required":  [
+                                                                                    "research_question"
+                                                                                ],
+                                                                   "title":  "ResearchTaskRequest",
+                                                                   "description":  "Validate data submitted when creating a research task."
+                                                               },
+                                       "TaskDependencyRequest":  {
+                                                                     "properties":  {
+                                                                                        "depends_on_task_id":  {
+                                                                                                                   "type":  "string",
+                                                                                                                   "minLength":  1,
+                                                                                                                   "title":  "Depends On Task Id",
+                                                                                                                   "description":  "ID of the prerequisite research task."
+                                                                                                               }
+                                                                                    },
+                                                                     "type":  "object",
+                                                                     "required":  [
+                                                                                      "depends_on_task_id"
+                                                                                  ],
+                                                                     "title":  "TaskDependencyRequest",
+                                                                     "description":  "Request body for creating a task dependency."
+                                                                 },
+                                       "ValidationError":  {
+                                                               "properties":  {
+                                                                                  "loc":  {
+                                                                                              "items":  {
+                                                                                                            "anyOf":  [
+                                                                                                                          {
+                                                                                                                              "type":  "string"
+                                                                                                                          },
+                                                                                                                          {
+                                                                                                                              "type":  "integer"
+                                                                                                                          }
+                                                                                                                      ]
+                                                                                                        },
+                                                                                              "type":  "array",
+                                                                                              "title":  "Location"
+                                                                                          },
+                                                                                  "msg":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Message"
+                                                                                          },
+                                                                                  "type":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Error Type"
+                                                                                           },
+                                                                                  "input":  {
+                                                                                                "title":  "Input"
+                                                                                            },
+                                                                                  "ctx":  {
+                                                                                              "type":  "object",
+                                                                                              "title":  "Context"
+                                                                                          }
+                                                                              },
+                                                               "type":  "object",
+                                                               "required":  [
+                                                                                "loc",
+                                                                                "msg",
+                                                                                "type"
+                                                                            ],
+                                                               "title":  "ValidationError"
+                                                           }
+                                   }
+                   }
+}

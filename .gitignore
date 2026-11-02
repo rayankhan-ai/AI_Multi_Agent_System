@@ -1,0 +1,73 @@
+# Python cache files
+
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+
+.venv/
+venv/
+env/
+
+# Environment variables and API keys
+
+.env
+.env.*
+!.env.example
+
+# Testing and coverage
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# SQLite databases
+
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated research reports
+
+reports/*
+!reports/.gitkeep
+
+# Backup files
+
+*.backup
+*.bak
+*.old
+
+# Frontend dependencies and build output
+
+frontend/node_modules/
+frontend/dist/
+
+# Editor and operating system files
+
+.vscode/
+.DS_Store
+Thumbs.db
+.idea/
+*.log
+
+# Root-level Node.js dependencies and build output
+
+node_modules/
+dist/
+build/
+
+# Temporary archives
+
+*.zip
+
+# Backup and temporary files
+
+*.backup*
+*.bak
+*.old
+*.tmp
+
+*_backup.py
+*_backup_*.py
