@@ -8,9 +8,7 @@ from pathlib import Path
 # Dict and Any describe the returned dictionary.
 from typing import Any, Dict
 
-
-# Folder where the research reports are stored.
-REPORTS_DIRECTORY = Path("reports")
+from backend.services.storage_paths import REPORTS_DIRECTORY
 
 
 def list_research_reports() -> Dict[str, Any]:

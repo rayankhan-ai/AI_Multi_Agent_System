@@ -1,6 +1,6 @@
 # ============================================================
-# PROJECT 4 - AI MULTI-AGENT RESEARCH & AUTOMATION SYSTEM
-# PART 10 - REPORT SAVING SERVICE
+# - AI MULTI-AGENT RESEARCH & AUTOMATION SYSTEM
+# - REPORT SAVING SERVICE
 # ============================================================
 
 # Import re to clean report titles for filenames.
@@ -15,14 +15,10 @@ from pathlib import Path
 # Import typing for type hints.
 from typing import Optional
 
+from backend.services.storage_paths import REPORTS_DIRECTORY
 
-# Find the project's root directory.
-# This file is inside backend/services/.
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-# Define the folder where research reports will be stored.
-REPORTS_FOLDER = PROJECT_ROOT / "reports"
-
+# Use the centralized report storage directory.
+REPORTS_FOLDER = REPORTS_DIRECTORY
 
 def create_safe_filename(title: str) -> str:
     """

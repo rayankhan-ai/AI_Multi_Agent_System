@@ -9,6 +9,7 @@ import sqlite3
 # Path helps us locate the database independently of the
 # directory from which the application is started.
 from pathlib import Path
+from backend.services.storage_paths import DATABASE_PATH
 
 # Any allows the function to return dictionaries containing
 # different types of analytics values.
@@ -17,11 +18,6 @@ from typing import Any, Dict, List
 
 # Use the existing research task database.
 # This is the same database used by agent_monitor.py.
-DATABASE_PATH = (
-    Path(__file__).resolve().parents[2] / "research_tasks.db"
-)
-
-
 def get_analytics_connection():
     """
     Open a connection to the existing SQLite database.

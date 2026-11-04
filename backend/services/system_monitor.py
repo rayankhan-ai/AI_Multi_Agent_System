@@ -6,6 +6,7 @@
 import sqlite3
 
 from pathlib import Path
+from backend.services.storage_paths import DATABASE_PATH
 from typing import Any, Dict, List
 
 from backend.services.agent_analytics import (
@@ -22,11 +23,6 @@ from backend.services.task_manager import (
 
 
 # Reuse the existing database.
-DATABASE_PATH = (
-    Path(__file__).resolve().parents[2] / "research_tasks.db"
-)
-
-
 def get_database_connection():
     """Create a connection to the existing SQLite database."""
 

@@ -5,12 +5,7 @@ import sqlite3
 import json
 
 # Import Path to manage the database file path.
-from pathlib import Path
-
-
-# Store the database in the project's root directory.
-DATABASE_PATH = Path(__file__).resolve().parents[2] / "research_tasks.db"
-
+from backend.services.storage_paths import DATABASE_PATH
 
 def get_connection():
     """Create a database connection with dictionary-like rows."""

@@ -1,0 +1,39 @@
+# ============================================================
+# RENDER DEPLOYMENT CONFIGURATION
+# AI MULTI-AGENT RESEARCH AND AUTOMATION SYSTEM
+# ============================================================
+
+services:
+  - type: web
+    name: ai-multi-agent-system
+    runtime: python
+    region: singapore
+
+    # Install project dependencies.
+    buildCommand: pip install -r requirements.txt
+
+    # Start the FastAPI backend.
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+
+    # Backend health-check endpoint.
+    healthCheckPath: /health
+
+    # Environment variables.
+    envVars:
+      - key: APP_DATA_DIR
+        value: /var/data
+
+      - key: GROQ_API_KEY
+        sync: false
+
+      - key: TAVILY_API_KEY
+        sync: false
+
+      - key: FRONTEND_ORIGINS
+        sync: false
+
+    # Persistent storage.
+    disk:
+      name: ai-multi-agent-storage
+      mountPath: /var/data
+      sizeGB: 1

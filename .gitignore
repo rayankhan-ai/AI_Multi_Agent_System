@@ -71,3 +71,15 @@ build/
 
 *_backup.py
 *_backup_*.py
+
+# Local backups and temporary deployment scripts
+
+backups/
+fix_database_paths.py
+update_database_paths.py
+
+# Local deployment verification scripts
+
+test_database_paths.py
+test_report_paths.py
+test_render_storage.py

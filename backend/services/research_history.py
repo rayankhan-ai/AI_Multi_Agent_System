@@ -17,10 +17,7 @@ from typing import Any, Dict
 # uuid4 generates a unique ID for each research task.
 from uuid import uuid4
 
-
-# Folder where Markdown reports and JSON metadata are saved.
-REPORTS_DIRECTORY = Path("reports")
-
+from backend.services.storage_paths import REPORTS_DIRECTORY
 
 def create_research_metadata(research_question: str) -> Dict[str, str]:
     """

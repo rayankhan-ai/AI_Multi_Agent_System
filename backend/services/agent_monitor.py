@@ -14,18 +14,13 @@ from datetime import datetime, timezone
 
 # Import Path for reliable database location.
 from pathlib import Path
+from backend.services.storage_paths import DATABASE_PATH
 
 # Import typing helpers.
 from typing import Any, Dict, Optional
 
 
 # Use the same database file as the task manager.
-DATABASE_PATH = (
-    Path(__file__).resolve().parents[2]
-    / "research_tasks.db"
-)
-
-
 def get_timestamp() -> str:
     """Return the current UTC timestamp."""
 

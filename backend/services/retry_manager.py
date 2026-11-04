@@ -10,14 +10,11 @@ import uuid
 
 from datetime import datetime, timezone
 from pathlib import Path
+from backend.services.storage_paths import DATABASE_PATH
 from typing import Any, Callable, Dict, Optional, TypeVar
 
 
 # Reuse the existing project database.
-DATABASE_PATH = (
-    Path(__file__).resolve().parents[2] / "research_tasks.db"
-)
-
 # Configure the retry policy.
 MAX_RETRIES = 3
 INITIAL_RETRY_DELAY = 1.0

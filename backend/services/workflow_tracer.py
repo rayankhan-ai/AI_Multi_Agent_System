@@ -9,15 +9,11 @@ import uuid
 
 from datetime import datetime, timezone
 from pathlib import Path
+from backend.services.storage_paths import DATABASE_PATH
 from typing import Any, Dict, Optional
 
 
 # Reuse the existing project database.
-DATABASE_PATH = (
-    Path(__file__).resolve().parents[2] / "research_tasks.db"
-)
-
-
 def get_timestamp() -> str:
     """Return the current UTC timestamp in ISO format."""
 
