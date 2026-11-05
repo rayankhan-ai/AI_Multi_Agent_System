@@ -1,5 +1,5 @@
 # ============================================================
-# RENDER DEPLOYMENT CONFIGURATION
+# FREE RENDER DEPLOYMENT CONFIGURATION
 # AI MULTI-AGENT RESEARCH AND AUTOMATION SYSTEM
 # ============================================================
 
@@ -20,9 +20,6 @@ services:
 
     # Environment variables.
     envVars:
-      - key: APP_DATA_DIR
-        value: /var/data
-
       - key: GROQ_API_KEY
         sync: false
 
@@ -31,9 +28,3 @@ services:
 
       - key: FRONTEND_ORIGINS
         sync: false
-
-    # Persistent storage.
-    disk:
-      name: ai-multi-agent-storage
-      mountPath: /var/data
-      sizeGB: 1
