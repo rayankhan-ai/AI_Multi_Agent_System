@@ -7,6 +7,11 @@ services:
   - type: web
     name: ai-multi-agent-system
     runtime: python
+
+    # Explicitly select Render's free compute plan.
+    plan: free
+
+    # Deployment region.
     region: singapore
 
     # Install project dependencies.
