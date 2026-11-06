@@ -1,40 +1,27 @@
 # ============================================================
-#  - AI MULTI-AGENT RESEARCH & AUTOMATION SYSTEM
-# - WORKFLOW EXECUTION TRACING
+# AI MULTI-AGENT RESEARCH & AUTOMATION SYSTEM
+# POSTGRESQL WORKFLOW EXECUTION TRACING
 # ============================================================
 
 import json
-import sqlite3
 import uuid
 
 from datetime import datetime, timezone
-from pathlib import Path
-from backend.services.storage_paths import DATABASE_PATH
 from typing import Any, Dict, Optional
 
+from backend.services.database import get_connection
 
-# Reuse the existing project database.
+
 def get_timestamp() -> str:
-    """Return the current UTC timestamp in ISO format."""
+    """Return the current UTC timestamp."""
 
     return datetime.now(timezone.utc).isoformat()
 
 
-def get_connection():
-    """Create a SQLite connection with named-column access."""
-
-    connection = sqlite3.connect(str(DATABASE_PATH))
-    connection.row_factory = sqlite3.Row
-
-    return connection
-
-
 def initialize_workflow_tracing() -> None:
-    """Create the workflow trace table if it does not exist."""
+    """Initialize PostgreSQL workflow tracing."""
 
-    connection = get_connection()
-
-    try:
+    with get_connection() as connection:
         connection.execute(
             """
             CREATE TABLE IF NOT EXISTS workflow_traces (
@@ -44,7 +31,7 @@ def initialize_workflow_tracing() -> None:
                 workflow_status TEXT NOT NULL,
                 started_at TEXT NOT NULL,
                 finished_at TEXT,
-                duration_seconds REAL,
+                duration_seconds DOUBLE PRECISION,
                 event_count INTEGER DEFAULT 0,
                 error_message TEXT,
                 trace_events TEXT
@@ -60,30 +47,18 @@ def initialize_workflow_tracing() -> None:
             """
         )
 
-        connection.commit()
-
-    finally:
-        connection.close()
-
 
 def start_workflow_trace(
     task_id: str,
     research_question: str,
 ) -> str:
-    """
-    Create a trace record when a workflow begins.
-    Return the unique trace ID.
-    """
+    """Create a new workflow trace."""
 
     initialize_workflow_tracing()
 
-    # Generate a unique ID for this workflow execution.
     trace_id = str(uuid.uuid4())
-
-    # Record the workflow start time.
     started_at = get_timestamp()
 
-    # Store the initial workflow event.
     initial_events = [
         {
             "event": "workflow_started",
@@ -93,9 +68,7 @@ def start_workflow_trace(
         }
     ]
 
-    connection = get_connection()
-
-    try:
+    with get_connection() as connection:
         connection.execute(
             """
             INSERT INTO workflow_traces (
@@ -107,7 +80,7 @@ def start_workflow_trace(
                 event_count,
                 trace_events
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 trace_id,
@@ -120,11 +93,6 @@ def start_workflow_trace(
             ),
         )
 
-        connection.commit()
-
-    finally:
-        connection.close()
-
     return trace_id
 
 
@@ -134,17 +102,15 @@ def add_workflow_trace_event(
     status: str = "completed",
     details: str = "",
 ) -> Dict[str, Any]:
-    """Append a timestamped event to an existing workflow trace."""
+    """Append an event to an existing workflow trace."""
 
-    connection = get_connection()
+    with get_connection() as connection:
 
-    try:
-        # Retrieve the existing trace record.
         row = connection.execute(
             """
             SELECT trace_events, event_count
             FROM workflow_traces
-            WHERE trace_id = ?
+            WHERE trace_id = %s
             """,
             (trace_id,),
         ).fetchone()
@@ -154,10 +120,8 @@ def add_workflow_trace_event(
                 f"Workflow trace not found: {trace_id}"
             )
 
-        # Decode the events already stored in SQLite.
         events = json.loads(row["trace_events"] or "[]")
 
-        # Construct the new event.
         event = {
             "event": event_name,
             "timestamp": get_timestamp(),
@@ -165,16 +129,14 @@ def add_workflow_trace_event(
             "details": details,
         }
 
-        # Append the new event to the timeline.
         events.append(event)
 
-        # Update the stored timeline and event count.
         connection.execute(
             """
             UPDATE workflow_traces
-            SET trace_events = ?,
-                event_count = ?
-            WHERE trace_id = ?
+            SET trace_events = %s,
+                event_count = %s
+            WHERE trace_id = %s
             """,
             (
                 json.dumps(events),
@@ -183,12 +145,7 @@ def add_workflow_trace_event(
             ),
         )
 
-        connection.commit()
-
         return event
-
-    finally:
-        connection.close()
 
 
 def finish_workflow_trace(
@@ -196,22 +153,17 @@ def finish_workflow_trace(
     workflow_status: str,
     error_message: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """
-    Mark a workflow trace as completed or failed.
-    Calculate the total execution duration.
-    """
+    """Finish a workflow trace and calculate execution duration."""
 
     finished_at = get_timestamp()
 
-    connection = get_connection()
+    with get_connection() as connection:
 
-    try:
-        # Find the original start time and existing timeline.
         row = connection.execute(
             """
             SELECT started_at, trace_events
             FROM workflow_traces
-            WHERE trace_id = ?
+            WHERE trace_id = %s
             """,
             (trace_id,),
         ).fetchone()
@@ -221,19 +173,25 @@ def finish_workflow_trace(
                 f"Workflow trace not found: {trace_id}"
             )
 
-        # Convert both timestamps to datetime objects.
-        started_at = datetime.fromisoformat(row["started_at"])
-        finished_datetime = datetime.fromisoformat(finished_at)
+        started_at_value = row["started_at"]
 
-        # Calculate the complete workflow duration in seconds.
+        if isinstance(started_at_value, datetime):
+            started_datetime = started_at_value
+        else:
+            started_datetime = datetime.fromisoformat(
+                started_at_value
+            )
+
+        finished_datetime = datetime.fromisoformat(
+            finished_at
+        )
+
         duration_seconds = (
-            finished_datetime - started_at
+            finished_datetime - started_datetime
         ).total_seconds()
 
-        # Load the previous events.
         events = json.loads(row["trace_events"] or "[]")
 
-        # Append the final event.
         events.append(
             {
                 "event": "workflow_finished",
@@ -247,17 +205,16 @@ def finish_workflow_trace(
             }
         )
 
-        # Save the final status, timing, and event timeline.
         connection.execute(
             """
             UPDATE workflow_traces
-            SET workflow_status = ?,
-                finished_at = ?,
-                duration_seconds = ?,
-                event_count = ?,
-                error_message = ?,
-                trace_events = ?
-            WHERE trace_id = ?
+            SET workflow_status = %s,
+                finished_at = %s,
+                duration_seconds = %s,
+                event_count = %s,
+                error_message = %s,
+                trace_events = %s
+            WHERE trace_id = %s
             """,
             (
                 workflow_status,
@@ -270,12 +227,10 @@ def finish_workflow_trace(
             ),
         )
 
-        connection.commit()
-
         return {
             "trace_id": trace_id,
             "workflow_status": workflow_status,
-            "started_at": started_at.isoformat(),
+            "started_at": started_datetime.isoformat(),
             "finished_at": finished_at,
             "duration_seconds": round(
                 duration_seconds, 3
@@ -283,64 +238,52 @@ def finish_workflow_trace(
             "event_count": len(events),
         }
 
-    finally:
-        connection.close()
-
 
 def get_workflow_trace(
     trace_id: str,
 ) -> Optional[Dict[str, Any]]:
-    """Retrieve one workflow trace by its unique trace ID."""
+    """Retrieve one workflow trace."""
 
-    connection = get_connection()
+    with get_connection() as connection:
 
-    try:
         row = connection.execute(
             """
             SELECT *
             FROM workflow_traces
-            WHERE trace_id = ?
+            WHERE trace_id = %s
             """,
             (trace_id,),
         ).fetchone()
 
-        # Return None when the requested trace does not exist.
         if row is None:
             return None
 
-        # Convert the database row to a normal dictionary.
         result = dict(row)
 
-        # Decode the event timeline into a JSON list.
         result["trace_events"] = json.loads(
             result["trace_events"] or "[]"
         )
 
         return result
 
-    finally:
-        connection.close()
-
 
 def get_task_workflow_traces(
     task_id: str,
 ) -> Dict[str, Any]:
-    """Retrieve all workflow traces associated with one task."""
+    """Retrieve all workflow traces associated with a task."""
 
-    connection = get_connection()
+    with get_connection() as connection:
 
-    try:
         rows = connection.execute(
             """
             SELECT *
             FROM workflow_traces
-            WHERE task_id = ?
+            WHERE task_id = %s
             ORDER BY started_at DESC
             """,
             (task_id,),
         ).fetchall()
 
-        # Convert each database row into a response dictionary.
         traces = []
 
         for row in rows:
@@ -353,10 +296,6 @@ def get_task_workflow_traces(
             traces.append(trace)
 
         return {
-            "task_id": task_id,
             "total_traces": len(traces),
             "traces": traces,
         }
-
-    finally:
-        connection.close()

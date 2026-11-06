@@ -1,89 +1,71 @@
 # ============================================================
-#  - INTELLIGENT TASK DEPENDENCY MANAGEMENT
-# File: backend/services/task_dependencies.py
+# POSTGRESQL TASK DEPENDENCY MANAGEMENT
 # ============================================================
 
-# SQLite is used to store and retrieve task dependencies.
-import sqlite3
+from datetime import datetime
 
-# Import the existing task database connection.
-from backend.services.task_database import (
-    get_connection,
-    initialize_task_database,
-)
+import psycopg
+
+from backend.services.database import get_connection
+from backend.services.task_database import initialize_task_database
+from backend.services.task_priority import PRIORITY_SCORES
 
 
 # ============================================================
-# STEP 1 - INITIALIZE DEPENDENCY STORAGE
+# STEP 1 - INITIALIZE DEPENDENCY SUPPORT
 # ============================================================
 
 def initialize_task_dependencies():
-    """
-    Create a table for relationships between research tasks.
+    """Initialize PostgreSQL task dependency support."""
 
-    Each dependency records which task must finish before
-    another task is allowed to execute.
-    """
-
-    # Ensure the existing research task database is initialized.
     initialize_task_database()
 
-    # Create the dependency table if it does not already exist.
     with get_connection() as connection:
-        connection.execute(
-            """
+        connection.execute("""
             CREATE TABLE IF NOT EXISTS task_dependencies (
-                task_id TEXT NOT NULL,
-                depends_on_task_id TEXT NOT NULL,
+                task_id TEXT NOT NULL
+                    REFERENCES research_tasks(task_id)
+                    ON DELETE CASCADE,
 
-                PRIMARY KEY (
-                    task_id,
-                    depends_on_task_id
-                ),
+                depends_on_task_id TEXT NOT NULL
+                    REFERENCES research_tasks(task_id)
+                    ON DELETE CASCADE,
 
-                CHECK (task_id != depends_on_task_id)
+                PRIMARY KEY (task_id, depends_on_task_id),
+
+                CHECK (task_id <> depends_on_task_id)
             )
-            """
-        )
+        """)
 
-        # Create an index to make dependency lookups faster.
-        connection.execute(
-            """
-            CREATE INDEX IF NOT EXISTS
-            idx_task_dependencies_task_id
+        connection.execute("""
+            CREATE INDEX IF NOT EXISTS idx_dependencies_task
             ON task_dependencies(task_id)
-            """
-        )
+        """)
 
-        connection.execute(
-            """
-            CREATE INDEX IF NOT EXISTS
-            idx_task_dependencies_parent
+        connection.execute("""
+            CREATE INDEX IF NOT EXISTS idx_dependencies_prerequisite
             ON task_dependencies(depends_on_task_id)
-            """
-        )
+        """)
 
     return {
         "success": True,
-        "message": "Task dependency storage initialized successfully.",
+        "message": "PostgreSQL task dependency support initialized.",
     }
 
 
 # ============================================================
-# STEP 2 - VALIDATE TASK REFERENCES
+# STEP 2 - VALIDATE TASK EXISTENCE
 # ============================================================
 
 def validate_task_exists(task_id):
-    """
-    Check whether a research task exists in the database.
-    """
+    """Check whether a research task exists."""
 
     with get_connection() as connection:
         row = connection.execute(
             """
             SELECT task_id
             FROM research_tasks
-            WHERE task_id = ?
+            WHERE task_id = %s
             """,
             (task_id,),
         ).fetchone()
@@ -92,60 +74,40 @@ def validate_task_exists(task_id):
 
 
 # ============================================================
-# STEP 3 - CHECK WHETHER A DEPENDENCY WOULD CREATE A CYCLE
+# STEP 3 - DETECT DEPENDENCY CYCLES
 # ============================================================
 
-def dependency_would_create_cycle(
-    task_id,
-    depends_on_task_id,
-):
-    """
-    Determine whether adding a dependency would create a cycle.
+def dependency_would_create_cycle(task_id, depends_on_task_id):
+    """Check whether adding a dependency would create a cycle."""
 
-    Example of an invalid cycle:
-
-        Task A depends on Task B.
-        Task B depends on Task A.
-
-    A cycle would prevent the tasks from becoming ready.
-    """
-
-    # Start from the proposed prerequisite task.
-    pending_tasks = [depends_on_task_id]
-
-    # Track visited tasks to avoid repeatedly checking them.
-    visited_tasks = set()
+    visited = set()
+    stack = [depends_on_task_id]
 
     with get_connection() as connection:
 
-        while pending_tasks:
+        while stack:
 
-            current_task_id = pending_tasks.pop()
+            current_task = stack.pop()
 
-            # Reaching the original task means a cycle exists.
-            if current_task_id == task_id:
+            if current_task == task_id:
                 return True
 
-            # Skip tasks already examined.
-            if current_task_id in visited_tasks:
+            if current_task in visited:
                 continue
 
-            visited_tasks.add(current_task_id)
+            visited.add(current_task)
 
-            # Find tasks that the current task itself depends on.
             rows = connection.execute(
                 """
                 SELECT depends_on_task_id
                 FROM task_dependencies
-                WHERE task_id = ?
+                WHERE task_id = %s
                 """,
-                (current_task_id,),
+                (current_task,),
             ).fetchall()
 
             for row in rows:
-                pending_tasks.append(
-                    row["depends_on_task_id"]
-                )
+                stack.append(row["depends_on_task_id"])
 
     return False
 
@@ -154,35 +116,23 @@ def dependency_would_create_cycle(
 # STEP 4 - ADD A TASK DEPENDENCY
 # ============================================================
 
-def add_task_dependency(
-    task_id,
-    depends_on_task_id,
-):
-    """
-    Make one task depend on another task.
+def add_task_dependency(task_id, depends_on_task_id):
+    """Add a prerequisite relationship between two tasks."""
 
-    The dependent task cannot become ready until its prerequisite
-    has completed successfully.
-    """
-
-    # Ensure the dependency table exists.
     initialize_task_dependencies()
 
-    # Prevent a task from depending on itself.
     if task_id == depends_on_task_id:
         return {
             "success": False,
             "message": "A task cannot depend on itself.",
         }
 
-    # Confirm that the dependent task exists.
     if not validate_task_exists(task_id):
         return {
             "success": False,
             "message": f"Task '{task_id}' does not exist.",
         }
 
-    # Confirm that the prerequisite task exists.
     if not validate_task_exists(depends_on_task_id):
         return {
             "success": False,
@@ -192,11 +142,7 @@ def add_task_dependency(
             ),
         }
 
-    # Prevent circular task dependencies.
-    if dependency_would_create_cycle(
-        task_id,
-        depends_on_task_id,
-    ):
+    if dependency_would_create_cycle(task_id, depends_on_task_id):
         return {
             "success": False,
             "message": (
@@ -206,7 +152,6 @@ def add_task_dependency(
         }
 
     try:
-        # Store the dependency relationship.
         with get_connection() as connection:
             connection.execute(
                 """
@@ -214,12 +159,9 @@ def add_task_dependency(
                     task_id,
                     depends_on_task_id
                 )
-                VALUES (?, ?)
+                VALUES (%s, %s)
                 """,
-                (
-                    task_id,
-                    depends_on_task_id,
-                ),
+                (task_id, depends_on_task_id),
             )
 
         return {
@@ -229,7 +171,7 @@ def add_task_dependency(
             "depends_on_task_id": depends_on_task_id,
         }
 
-    except sqlite3.IntegrityError:
+    except psycopg.IntegrityError:
         return {
             "success": False,
             "message": (
@@ -240,22 +182,18 @@ def add_task_dependency(
 
 
 # ============================================================
-# STEP 5 - GET A TASK'S DEPENDENCIES
+# STEP 5 - GET TASK DEPENDENCIES
 # ============================================================
 
 def get_task_dependencies(task_id):
-    """
-    Return the prerequisites configured for a research task.
-    """
+    """Return the prerequisites configured for a task."""
 
-    # Verify that the requested task exists.
     if not validate_task_exists(task_id):
         return {
             "success": False,
             "message": f"Task '{task_id}' does not exist.",
         }
 
-    # Read the task's prerequisite IDs and current statuses.
     with get_connection() as connection:
         rows = connection.execute(
             """
@@ -264,15 +202,13 @@ def get_task_dependencies(task_id):
                 tasks.status
             FROM task_dependencies AS dependencies
             JOIN research_tasks AS tasks
-                ON tasks.task_id =
-                   dependencies.depends_on_task_id
-            WHERE dependencies.task_id = ?
+                ON tasks.task_id = dependencies.depends_on_task_id
+            WHERE dependencies.task_id = %s
             ORDER BY dependencies.depends_on_task_id
             """,
             (task_id,),
         ).fetchall()
 
-    # Convert database records into API-friendly dictionaries.
     dependencies = [
         {
             "task_id": row["depends_on_task_id"],
@@ -290,42 +226,33 @@ def get_task_dependencies(task_id):
 
 
 # ============================================================
-# STEP 6 - CHECK WHETHER A TASK IS READY
+# STEP 6 - CHECK TASK READINESS
 # ============================================================
 
 def check_task_dependencies(task_id):
-    """
-    Determine whether a task's prerequisites are satisfied.
+    """Check whether all prerequisite tasks are completed."""
 
-    A task is ready only when all its prerequisite tasks
-    have status 'completed'.
-    """
+    result = get_task_dependencies(task_id)
 
-    # Load the prerequisite tasks.
-    dependency_result = get_task_dependencies(task_id)
+    if not result["success"]:
+        return result
 
-    # Return the error if the requested task does not exist.
-    if not dependency_result["success"]:
-        return dependency_result
+    dependencies = result["dependencies"]
 
-    dependencies = dependency_result["dependencies"]
-
-    # Identify prerequisites that have not completed.
-    incomplete_dependencies = [
+    incomplete = [
         dependency
         for dependency in dependencies
         if dependency["status"] != "completed"
     ]
 
-    # The task is ready when every prerequisite has completed.
-    ready = len(incomplete_dependencies) == 0
+    ready = len(incomplete) == 0
 
     return {
         "success": True,
         "task_id": task_id,
         "ready": ready,
         "total_dependencies": len(dependencies),
-        "incomplete_dependencies": incomplete_dependencies,
+        "incomplete_dependencies": incomplete,
         "message": (
             "All dependencies are satisfied."
             if ready
@@ -335,24 +262,17 @@ def check_task_dependencies(task_id):
 
 
 # ============================================================
-# STEP 7 - FIND TASKS THAT ARE READY TO EXECUTE
+# STEP 7 - GET READY TASKS
 # ============================================================
 
 def get_ready_tasks(limit=100):
-    """
-    Return pending research tasks whose dependencies are satisfied.
+    """Return pending tasks whose prerequisites are completed."""
 
-    Tasks retain the existing priority-based scheduling order.
-    """
-
-    # Validate the result limit.
     if limit < 1 or limit > 500:
         raise ValueError("Limit must be between 1 and 500.")
 
-    # Ensure the dependency table exists.
     initialize_task_dependencies()
 
-    # Find pending tasks without unfinished prerequisites.
     with get_connection() as connection:
         rows = connection.execute(
             """
@@ -365,20 +285,15 @@ def get_ready_tasks(limit=100):
                 tasks.retry_count
             FROM research_tasks AS tasks
             WHERE tasks.status = 'pending'
-
             AND NOT EXISTS (
                 SELECT 1
                 FROM task_dependencies AS dependencies
-
                 JOIN research_tasks AS prerequisite
                     ON prerequisite.task_id =
                        dependencies.depends_on_task_id
-
                 WHERE dependencies.task_id = tasks.task_id
-
                 AND prerequisite.status != 'completed'
             )
-
             ORDER BY
                 CASE tasks.priority
                     WHEN 'critical' THEN 4
@@ -387,47 +302,33 @@ def get_ready_tasks(limit=100):
                     WHEN 'low' THEN 1
                     ELSE 0
                 END DESC,
-
                 tasks.created_at ASC,
                 tasks.task_id ASC
-
-            LIMIT ?
+            LIMIT %s
             """,
             (limit,),
         ).fetchall()
 
-    # Convert the database results into dictionaries.
-    ready_tasks = [
-        dict(row)
-        for row in rows
-    ]
+    tasks = [dict(row) for row in rows]
 
     return {
         "success": True,
-        "total_ready_tasks": len(ready_tasks),
-        "tasks": ready_tasks,
+        "total_ready_tasks": len(tasks),
+        "tasks": tasks,
     }
-    
+
+
 # ============================================================
-# - WORKFLOW OVERVIEW SERVICE
+# STEP 8 - WORKFLOW OVERVIEW
 # ============================================================
 
 def get_workflow_overview():
-    """
-    Return an overview of research tasks and their dependencies.
+    """Return all tasks and their dependency information."""
 
-    This function provides the information needed to monitor
-    the workflow and build a future frontend dashboard.
-    """
-
-    # Ensure that the dependency database tables exist.
     initialize_task_dependencies()
 
-    # Open a connection to the existing SQLite database.
     with get_connection() as connection:
 
-        # Retrieve task information without including large
-        # research results or complete report contents.
         task_rows = connection.execute("""
             SELECT
                 task_id,
@@ -443,7 +344,6 @@ def get_workflow_overview():
             ORDER BY created_at ASC, task_id ASC
         """).fetchall()
 
-        # Retrieve every dependency and its prerequisite status.
         dependency_rows = connection.execute("""
             SELECT
                 dependencies.task_id,
@@ -454,93 +354,65 @@ def get_workflow_overview():
                 ON prerequisite.task_id =
                    dependencies.depends_on_task_id
             ORDER BY
-                dependencies.task_id ASC,
-                dependencies.depends_on_task_id ASC
+                dependencies.task_id,
+                dependencies.depends_on_task_id
         """).fetchall()
 
-    # Create a dictionary to group dependencies by task ID.
     dependencies_by_task = {}
 
-    # Process each dependency returned by the database.
     for row in dependency_rows:
-
-        # Identify the task that depends on another task.
         task_id = row["task_id"]
 
-        # Create its dependency list if this is the first entry.
         if task_id not in dependencies_by_task:
             dependencies_by_task[task_id] = []
 
-        # Store the prerequisite ID and its current status.
         dependencies_by_task[task_id].append({
             "task_id": row["depends_on_task_id"],
             "status": row["prerequisite_status"],
         })
 
-    # Prepare the final list of workflow tasks.
     workflow_tasks = []
-
-    # Count tasks by status for the workflow summary.
     status_counts = {}
-
-    # Count tasks that are currently eligible to execute.
     total_ready_tasks = 0
 
-    # Process every task.
     for row in task_rows:
 
-        # Convert the database row into a regular dictionary.
         task = dict(row)
 
-        # Retrieve this task's prerequisites.
         dependencies = dependencies_by_task.get(
             task["task_id"],
             [],
         )
 
-        # Find prerequisites that have not completed.
-        incomplete_dependencies = [
+        incomplete = [
             dependency
             for dependency in dependencies
             if dependency["status"] != "completed"
         ]
 
-        # A task is ready when all prerequisites are complete.
-        dependencies_satisfied = (
-            len(incomplete_dependencies) == 0
-        )
+        dependencies_satisfied = len(incomplete) == 0
 
-        # Only pending tasks can be selected for execution.
-        ready_to_execute = (
+        ready = (
             task["status"] == "pending"
             and dependencies_satisfied
         )
 
-        # Add the task to the ready-task count when eligible.
-        if ready_to_execute:
+        if ready:
             total_ready_tasks += 1
 
-        # Update the count for the task's current status.
-        task_status = task["status"]
+        status = task["status"]
 
-        status_counts[task_status] = (
-            status_counts.get(task_status, 0) + 1
+        status_counts[status] = (
+            status_counts.get(status, 0) + 1
         )
 
-        # Add dependency and readiness information.
         task["dependencies"] = dependencies
-        task["dependencies_satisfied"] = (
-            dependencies_satisfied
-        )
-        task["incomplete_dependencies"] = (
-            incomplete_dependencies
-        )
-        task["ready_to_execute"] = ready_to_execute
+        task["dependencies_satisfied"] = dependencies_satisfied
+        task["incomplete_dependencies"] = incomplete
+        task["ready_to_execute"] = ready
 
-        # Add this task to the workflow overview.
         workflow_tasks.append(task)
 
-    # Return a structured workflow overview.
     return {
         "success": True,
         "workflow_type": "priority_and_dependency_based",
@@ -549,30 +421,20 @@ def get_workflow_overview():
         "status_counts": status_counts,
         "tasks": workflow_tasks,
     }
-    
+
+
 # ============================================================
-#  - WORKFLOW EXECUTION STATISTICS
+# STEP 9 - WORKFLOW STATISTICS
 # ============================================================
 
 def get_workflow_statistics():
-    """
-    Calculate workflow statistics from the research task database.
+    """Calculate task, priority, and dependency statistics."""
 
-    ```
-    The function reports task statuses, priorities, dependency
-    readiness, and overall completion percentage.
-    """
-
-    # Retrieve the complete workflow overview.
     overview = get_workflow_overview()
-
-    # Extract all tasks from the overview.
     tasks = overview["tasks"]
 
-    # Count the total number of tasks.
     total_tasks = len(tasks)
 
-    # Initialize task-status counters.
     status_counts = {
         "pending": 0,
         "running": 0,
@@ -580,7 +442,6 @@ def get_workflow_statistics():
         "failed": 0,
     }
 
-    # Initialize priority counters.
     priority_counts = {
         "critical": 0,
         "high": 0,
@@ -588,42 +449,35 @@ def get_workflow_statistics():
         "low": 0,
     }
 
-    # Count tasks that are blocked by dependencies.
     blocked_tasks = 0
 
-    # Examine each task in the workflow.
     for task in tasks:
 
-    # Count the task's current status.
         status = task.get("status", "pending")
 
-    if status in status_counts:
-        status_counts[status] += 1
+        if status in status_counts:
+            status_counts[status] += 1
 
-    # Count the task's priority.
-    priority = task.get("priority", "normal")
+        priority = task.get("priority", "normal")
 
-    if priority in priority_counts:
-        priority_counts[priority] += 1
+        if priority in priority_counts:
+            priority_counts[priority] += 1
 
-    # A pending task with incomplete prerequisites is blocked.
-    if (
-        status == "pending"
-        and not task.get("dependencies_satisfied", True)
-    ):
-        blocked_tasks += 1
+        if (
+            status == "pending"
+            and not task.get("dependencies_satisfied", True)
+        ):
+            blocked_tasks += 1
 
-    # Calculate completion percentage safely.
     completion_percentage = (
         round(
-            (status_counts["completed"] / total_tasks) * 100,
+            status_counts["completed"] / total_tasks * 100,
             2,
-    )
-    if total_tasks > 0
-    else 0.0
+        )
+        if total_tasks > 0
+        else 0.0
     )
 
-    # Return the workflow statistics.
     return {
         "success": True,
         "total_tasks": total_tasks,
@@ -634,35 +488,24 @@ def get_workflow_statistics():
         "completion_percentage": completion_percentage,
     }
 
+
 # ============================================================
-#  - WORKFLOW HEALTH MONITORING
+# STEP 10 - WORKFLOW HEALTH
 # ============================================================
 
 def get_workflow_health():
-    """
-    Inspect workflow tasks and report potential problems.
+    """Identify failed, blocked, running, and ready tasks."""
 
-    ```
-    This function only reads workflow information.
-    It does not modify or execute research tasks.
-    """
-
-    # Retrieve the current workflow overview.
     overview = get_workflow_overview()
-
-    # Extract all workflow tasks.
     tasks = overview["tasks"]
 
-    # Prepare lists for different workflow conditions.
     failed_tasks = []
     blocked_tasks = []
     running_tasks = []
     ready_tasks = []
 
-    # Examine every task in the workflow.
     for task in tasks:
 
-        # Collect tasks that have failed.
         if task.get("status") == "failed":
             failed_tasks.append({
                 "task_id": task["task_id"],
@@ -670,7 +513,6 @@ def get_workflow_health():
                 "error": task.get("error"),
             })
 
-        # Collect pending tasks waiting for prerequisites.
         if (
             task.get("status") == "pending"
             and not task.get("dependencies_satisfied", True)
@@ -683,14 +525,12 @@ def get_workflow_health():
                 ],
             })
 
-        # Collect tasks currently executing.
         if task.get("status") == "running":
             running_tasks.append({
                 "task_id": task["task_id"],
                 "research_question": task["research_question"],
             })
 
-        # Collect pending tasks eligible for execution.
         if task.get("ready_to_execute"):
             ready_tasks.append({
                 "task_id": task["task_id"],
@@ -698,19 +538,13 @@ def get_workflow_health():
                 "priority": task.get("priority", "normal"),
             })
 
-    # Determine whether the workflow has reported problems.
-    has_failures = len(failed_tasks) > 0
-    has_blocked_tasks = len(blocked_tasks) > 0
-
-    # Report an overall health classification.
-    if has_failures:
+    if failed_tasks:
         health_status = "attention_required"
-    elif has_blocked_tasks:
+    elif blocked_tasks:
         health_status = "blocked_tasks_present"
     else:
         health_status = "healthy"
 
-    # Return the health report.
     return {
         "success": True,
         "health_status": health_status,
@@ -731,8 +565,9 @@ def get_workflow_health():
         },
     }
 
+
 # ============================================================
-#- PAGINATED AUDIT HISTORY SERVICE
+# STEP 11 - PAGINATED WORKFLOW AUDIT HISTORY
 # ============================================================
 
 def get_workflow_audit_history(
@@ -741,28 +576,17 @@ def get_workflow_audit_history(
     priority=None,
     search=None,
     page=1,
-        ):
-    """
-    Retrieve filtered audit records using pagination.
+):
+    """Retrieve filtered and paginated task history."""
 
-    ```
-    Page 1 returns the first group of matching records.
-    Page 2 returns the next group, and so on.
-    """
-
-    # Validate the number of records requested per page.
     if limit < 1 or limit > 100:
-        raise ValueError(
-            "Limit must be between 1 and 100."
-        )
+        raise ValueError("Limit must be between 1 and 100.")
 
-    # Validate the requested page number.
     if page < 1:
         raise ValueError(
             "Page must be greater than or equal to 1."
         )
 
-    # Validate task statuses.
     allowed_statuses = {
         "pending",
         "running",
@@ -775,7 +599,6 @@ def get_workflow_audit_history(
             "Status must be pending, running, completed, or failed."
         )
 
-    # Validate task priorities.
     allowed_priorities = {
         "critical",
         "high",
@@ -788,53 +611,46 @@ def get_workflow_audit_history(
             "Priority must be critical, high, normal, or low."
         )
 
-    # Build the SQL filter conditions.
     conditions = []
-    filter_parameters = []
+    parameters = []
 
     if status is not None:
-        conditions.append("status = ?")
-        filter_parameters.append(status)
+        conditions.append("status = %s")
+        parameters.append(status)
 
     if priority is not None:
-        conditions.append("priority = ?")
-        filter_parameters.append(priority)
+        conditions.append("priority = %s")
+        parameters.append(priority)
 
     if search is not None and search.strip():
-        conditions.append("research_question LIKE ?")
-        filter_parameters.append(f"%{search.strip()}%")
+        conditions.append("research_question ILIKE %s")
+        parameters.append(f"%{search.strip()}%")
 
-    # Prepare the reusable SQL filter.
     where_clause = ""
 
     if conditions:
         where_clause = " WHERE " + " AND ".join(conditions)
 
-    # Initialize the database before querying.
     initialize_task_dependencies()
 
-    # Calculate the number of matching records and retrieve
-    # the requested page using the same database connection.
     with get_connection() as connection:
 
-        # Count every matching record, not just this page.
         count_row = connection.execute(
-            "SELECT COUNT(*) AS total FROM research_tasks"
-            + where_clause,
-            tuple(filter_parameters),
+            """
+            SELECT COUNT(*) AS total
+            FROM research_tasks
+            """ + where_clause,
+            tuple(parameters),
         ).fetchone()
 
         total_records = count_row["total"]
 
-        # Calculate how many pages are available.
         total_pages = (
             (total_records + limit - 1) // limit
         )
 
-        # Calculate how many matching records to skip.
         offset = (page - 1) * limit
 
-        # Retrieve only the records needed for this page.
         query = """
             SELECT
                 task_id,
@@ -849,51 +665,46 @@ def get_workflow_audit_history(
             FROM research_tasks
         """ + where_clause + """
             ORDER BY created_at DESC, task_id DESC
-            LIMIT ? OFFSET ?
+            LIMIT %s OFFSET %s
         """
 
         rows = connection.execute(
             query,
-            tuple(filter_parameters) + (limit, offset),
+            tuple(parameters) + (limit, offset),
         ).fetchall()
 
-    # Prepare the page's history records.
     history = []
 
     for row in rows:
+
         task = dict(row)
         task["duration_seconds"] = None
 
         started_at = task.get("started_at")
         finished_at = task.get("finished_at")
 
-        # Calculate duration when both timestamps are available.
         if started_at and finished_at:
             try:
-                from datetime import datetime
 
-                start_time = datetime.fromisoformat(
-                    started_at
-                )
-                finish_time = datetime.fromisoformat(
-                    finished_at
-                )
+                if isinstance(started_at, str):
+                    started_at = datetime.fromisoformat(started_at)
+
+                if isinstance(finished_at, str):
+                    finished_at = datetime.fromisoformat(finished_at)
 
                 task["duration_seconds"] = round(
                     max(
-                        (finish_time - start_time).total_seconds(),
+                        (finished_at - started_at).total_seconds(),
                         0,
                     ),
                     2,
                 )
 
             except (ValueError, TypeError):
-                # Preserve the record if a timestamp is invalid.
                 task["duration_seconds"] = None
 
         history.append(task)
 
-    # Return pagination metadata and the requested records.
     return {
         "success": True,
         "total_records": total_records,
@@ -909,4 +720,3 @@ def get_workflow_audit_history(
         },
         "history": history,
     }
-

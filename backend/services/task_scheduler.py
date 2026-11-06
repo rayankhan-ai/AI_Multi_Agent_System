@@ -1,9 +1,10 @@
 # ============================================================
-# PRIORITY-BASED TASK SCHEDULER WITH DEPENDENCY SUPPORT
+# POSTGRESQL PRIORITY-BASED TASK SCHEDULER
 # ============================================================
 
+from backend.services.database import get_connection
+
 from backend.services.task_database import (
-    get_connection,
     initialize_task_database,
 )
 
@@ -18,11 +19,11 @@ from backend.services.task_dependencies import (
 
 
 # ============================================================
-# STEP 1 - INITIALIZE SCHEDULER SUPPORT
+# STEP 1 - INITIALIZE SCHEDULER
 # ============================================================
 
 def initialize_task_scheduler():
-    """Initialize priority and dependency scheduling support."""
+    """Initialize priority and dependency scheduling."""
 
     initialize_task_database()
     initialize_priority_support()
@@ -43,16 +44,11 @@ def initialize_task_scheduler():
 
 
 # ============================================================
-# STEP 2 - FIND THE NEXT ELIGIBLE TASK
+# STEP 2 - FIND NEXT ELIGIBLE TASK
 # ============================================================
 
 def get_next_scheduled_task():
-    """
-    Find the highest-priority pending task whose prerequisites
-    have all completed successfully.
-
-    Tasks with unfinished dependencies are skipped.
-    """
+    """Find the highest-priority eligible pending task."""
 
     initialize_priority_support()
     initialize_task_dependencies()
@@ -68,25 +64,17 @@ def get_next_scheduled_task():
                 tasks.priority,
                 tasks.created_at,
                 tasks.retry_count
-
             FROM research_tasks AS tasks
-
             WHERE tasks.status = 'pending'
-
             AND NOT EXISTS (
                 SELECT 1
-
                 FROM task_dependencies AS dependencies
-
                 JOIN research_tasks AS prerequisite
                     ON prerequisite.task_id =
                        dependencies.depends_on_task_id
-
                 WHERE dependencies.task_id = tasks.task_id
-
                 AND prerequisite.status != 'completed'
             )
-
             ORDER BY
                 CASE tasks.priority
                     WHEN 'critical' THEN 4
@@ -95,10 +83,8 @@ def get_next_scheduled_task():
                     WHEN 'low' THEN 1
                     ELSE 0
                 END DESC,
-
                 tasks.created_at ASC,
                 tasks.task_id ASC
-
             LIMIT 1
             """
         ).fetchone()
@@ -129,14 +115,11 @@ def get_next_scheduled_task():
 
 
 # ============================================================
-# STEP 3 - LIST ELIGIBLE TASKS IN PRIORITY ORDER
+# STEP 3 - LIST SCHEDULED TASKS
 # ============================================================
 
 def get_scheduled_task_queue(limit=100):
-    """
-    List pending tasks whose dependencies are satisfied,
-    ordered by priority and creation time.
-    """
+    """Return eligible pending tasks in priority order."""
 
     if limit < 1 or limit > 500:
         raise ValueError("Limit must be between 1 and 500.")
@@ -155,25 +138,17 @@ def get_scheduled_task_queue(limit=100):
                 tasks.priority,
                 tasks.created_at,
                 tasks.retry_count
-
             FROM research_tasks AS tasks
-
             WHERE tasks.status = 'pending'
-
             AND NOT EXISTS (
                 SELECT 1
-
                 FROM task_dependencies AS dependencies
-
                 JOIN research_tasks AS prerequisite
                     ON prerequisite.task_id =
                        dependencies.depends_on_task_id
-
                 WHERE dependencies.task_id = tasks.task_id
-
                 AND prerequisite.status != 'completed'
             )
-
             ORDER BY
                 CASE tasks.priority
                     WHEN 'critical' THEN 4
@@ -182,11 +157,9 @@ def get_scheduled_task_queue(limit=100):
                     WHEN 'low' THEN 1
                     ELSE 0
                 END DESC,
-
                 tasks.created_at ASC,
                 tasks.task_id ASC
-
-            LIMIT ?
+            LIMIT %s
             """,
             (limit,),
         ).fetchall()
@@ -207,13 +180,11 @@ def get_scheduled_task_queue(limit=100):
 
 
 # ============================================================
-# STEP 4 - CHECK SCHEDULER STATUS
+# STEP 4 - SCHEDULER STATUS
 # ============================================================
 
 def get_scheduler_status():
-    """
-    Report pending task counts and the next eligible priority.
-    """
+    """Return eligible pending task counts by priority."""
 
     initialize_priority_support()
     initialize_task_dependencies()
@@ -225,25 +196,17 @@ def get_scheduler_status():
             SELECT
                 tasks.priority,
                 COUNT(*) AS task_count
-
             FROM research_tasks AS tasks
-
             WHERE tasks.status = 'pending'
-
             AND NOT EXISTS (
                 SELECT 1
-
                 FROM task_dependencies AS dependencies
-
                 JOIN research_tasks AS prerequisite
                     ON prerequisite.task_id =
                        dependencies.depends_on_task_id
-
                 WHERE dependencies.task_id = tasks.task_id
-
                 AND prerequisite.status != 'completed'
             )
-
             GROUP BY tasks.priority
             """
         ).fetchall()
@@ -261,7 +224,12 @@ def get_scheduler_status():
     next_priority = next(
         (
             priority
-            for priority in ["critical", "high", "normal", "low"]
+            for priority in [
+                "critical",
+                "high",
+                "normal",
+                "low",
+            ]
             if pending_counts.get(priority, 0) > 0
         ),
         None,

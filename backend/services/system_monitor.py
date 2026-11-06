@@ -1,13 +1,13 @@
 # ============================================================
-# - AI MULTI-AGENT RESEARCH & AUTOMATION SYSTEM
-#  - UNIFIED SYSTEM MONITORING
+# AI MULTI-AGENT RESEARCH & AUTOMATION SYSTEM
+# POSTGRESQL UNIFIED SYSTEM MONITORING
 # ============================================================
 
-import sqlite3
+import json
 
-from pathlib import Path
-from backend.services.storage_paths import DATABASE_PATH
 from typing import Any, Dict, List
+
+from backend.services.database import get_connection
 
 from backend.services.agent_analytics import (
     get_agent_performance_analytics,
@@ -22,49 +22,31 @@ from backend.services.task_manager import (
 )
 
 
-# Reuse the existing database.
 def get_database_connection():
-    """Create a connection to the existing SQLite database."""
+    """Compatibility wrapper for the PostgreSQL connection."""
 
-    connection = sqlite3.connect(str(DATABASE_PATH))
-    connection.row_factory = sqlite3.Row
-
-    return connection
+    return get_connection()
 
 
 def get_workflow_statistics() -> Dict[str, Any]:
-    """
-    Calculate workflow execution statistics from the
-    workflow_traces table.
-    """
+    """Calculate workflow execution statistics."""
 
-    connection = get_database_connection()
+    with get_connection() as connection:
 
-    try:
-        # Count workflows and summarize their statuses.
         query = """
             SELECT
                 COUNT(*) AS total_workflows,
 
-                SUM(
-                    CASE
-                        WHEN workflow_status = 'completed'
-                        THEN 1 ELSE 0
-                    END
+                COUNT(*) FILTER (
+                    WHERE workflow_status = 'completed'
                 ) AS completed_workflows,
 
-                SUM(
-                    CASE
-                        WHEN workflow_status = 'failed'
-                        THEN 1 ELSE 0
-                    END
+                COUNT(*) FILTER (
+                    WHERE workflow_status = 'failed'
                 ) AS failed_workflows,
 
-                SUM(
-                    CASE
-                        WHEN workflow_status = 'running'
-                        THEN 1 ELSE 0
-                    END
+                COUNT(*) FILTER (
+                    WHERE workflow_status = 'running'
                 ) AS running_workflows,
 
                 AVG(duration_seconds) AS average_duration_seconds
@@ -83,7 +65,6 @@ def get_workflow_statistics() -> Dict[str, Any]:
             row["average_duration_seconds"] or 0
         )
 
-        # Calculate the workflow success percentage.
         if total > 0:
             success_rate = completed / total * 100
         else:
@@ -96,30 +77,20 @@ def get_workflow_statistics() -> Dict[str, Any]:
             "running_workflows": running,
             "success_rate": round(success_rate, 2),
             "average_duration_seconds": round(
-                average_duration, 2
+                float(average_duration), 2
             ),
         }
 
-    finally:
-        connection.close()
-
 
 def get_system_overview() -> Dict[str, Any]:
-    """
-    Combine task, agent, and workflow statistics
-    into one system overview.
-    """
+    """Combine task, agent, and workflow statistics."""
 
-    # Retrieve agent execution analytics.
     agent_analytics = get_agent_performance_analytics()
 
-    # Retrieve workflow execution statistics.
     workflow_analytics = get_workflow_statistics()
 
-    # Retrieve the existing task records.
     tasks = get_all_tasks()
 
-    # Count tasks by their current status.
     task_status_counts = {
         "total": 0,
         "pending": 0,
@@ -128,8 +99,6 @@ def get_system_overview() -> Dict[str, Any]:
         "failed": 0,
     }
 
-    # Task manager results may be a list or a dictionary
-    # containing a list, depending on its implementation.
     if isinstance(tasks, dict):
         task_list = tasks.get("tasks", [])
     elif isinstance(tasks, list):
@@ -138,24 +107,28 @@ def get_system_overview() -> Dict[str, Any]:
         task_list = []
 
     for task in task_list:
+
         if not isinstance(task, dict):
             continue
 
-        status = str(task.get("status", "unknown")).lower()
+        status = str(
+            task.get("status", "unknown")
+        ).lower()
 
         task_status_counts["total"] += 1
 
         if status in task_status_counts:
             task_status_counts[status] += 1
 
-    # Return a unified response.
     return {
         "system_status": (
             "operational"
             if workflow_analytics["failed_workflows"] == 0
             else "operational_with_failures"
         ),
+
         "tasks": task_status_counts,
+
         "agents": {
             "total_executions": agent_analytics[
                 "total_executions"
@@ -166,12 +139,15 @@ def get_system_overview() -> Dict[str, Any]:
             "failed_executions": agent_analytics[
                 "failed_executions"
             ],
-            "success_rate": agent_analytics["success_rate"],
+            "success_rate": agent_analytics[
+                "success_rate"
+            ],
             "average_duration_seconds": agent_analytics[
                 "average_duration_seconds"
             ],
             "agent_details": agent_analytics["agents"],
         },
+
         "workflows": workflow_analytics,
     }
 
@@ -179,15 +155,13 @@ def get_system_overview() -> Dict[str, Any]:
 def get_recent_system_activity(
     limit: int = 20,
 ) -> Dict[str, Any]:
-    """
-    Return the latest agent execution records.
-    """
+    """Return recent agent execution records."""
 
-    # Keep the requested result size within reasonable bounds.
     safe_limit = max(1, min(limit, 100))
 
-    # Reuse the existing monitoring implementation.
-    activity = get_recent_agent_logs(limit=safe_limit)
+    activity = get_recent_agent_logs(
+        limit=safe_limit
+    )
 
     return {
         "limit": safe_limit,
@@ -198,19 +172,15 @@ def get_recent_system_activity(
 def get_task_diagnostics(
     task_id: str,
 ) -> Dict[str, Any]:
-    """
-    Retrieve monitoring information for one task.
-    """
+    """Retrieve monitoring information for one task."""
 
-    connection = get_database_connection()
+    with get_connection() as connection:
 
-    try:
-        # Fetch all traces linked to this task.
         trace_rows = connection.execute(
             """
             SELECT *
             FROM workflow_traces
-            WHERE task_id = ?
+            WHERE task_id = %s
             ORDER BY started_at DESC
             """,
             (task_id,),
@@ -219,10 +189,8 @@ def get_task_diagnostics(
         traces: List[Dict[str, Any]] = []
 
         for row in trace_rows:
-            trace = dict(row)
 
-            # Decode the stored workflow event timeline.
-            import json
+            trace = dict(row)
 
             trace["trace_events"] = json.loads(
                 trace.get("trace_events") or "[]"
@@ -230,7 +198,6 @@ def get_task_diagnostics(
 
             traces.append(trace)
 
-        # Fetch agent logs for the same task.
         log_rows = connection.execute(
             """
             SELECT
@@ -245,23 +212,21 @@ def get_task_diagnostics(
                 output_summary,
                 error_message
             FROM agent_execution_logs
-            WHERE task_id = ?
+            WHERE task_id = %s
             ORDER BY started_at ASC
             """,
             (task_id,),
         ).fetchall()
 
-        agent_logs = [dict(row) for row in log_rows]
+        agent_logs = [
+            dict(row)
+            for row in log_rows
+        ]
 
-        # Return one combined diagnostic response.
         return {
             "task_id": task_id,
             "trace_count": len(traces),
-            "agent_execution_count": len(agent_logs),
             "traces": traces,
+            "agent_execution_count": len(agent_logs),
             "agent_logs": agent_logs,
         }
-
-    finally:
-        connection.close()
-

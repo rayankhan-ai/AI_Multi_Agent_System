@@ -7,7 +7,6 @@ from pydantic import BaseModel
 
 # Import os to read configuration from environment variables.
 import os
-
 import asyncio
 
 # Import the functions used to retrieve research history.
@@ -16,6 +15,8 @@ from backend.services.research_history import (
     get_research_by_id,
 )
 
+from fastapi.responses import Response
+
 # ============================================================
 # REPORT RETRIEVAL IMPORTS
 # ============================================================
@@ -23,14 +24,6 @@ from backend.services.research_history import (
 from backend.services.report_retrieval import (
     list_research_reports,
     get_research_report,
-)
-
-# FileResponse sends an existing file as an HTTP response.
-from fastapi.responses import FileResponse
-
-# Import the report path validation function.
-from backend.services.report_retrieval import (
-    get_research_report_path,
 )
 
 from fastapi import HTTPException
@@ -121,6 +114,9 @@ from backend.services.task_dependencies import (
     get_workflow_audit_history,
 )
 
+# Central PostgreSQL database initialization.
+from backend.services.database import initialize_database
+
 import csv
 import io
 
@@ -169,7 +165,23 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def recover_tasks_on_startup():
+
+    # Initialize all PostgreSQL tables and indexes first.
+    database_result = initialize_database()
+
+    if not database_result.get("success"):
+        raise RuntimeError(
+            "PostgreSQL database initialization failed."
+        )
+
+    print(
+        "PostgreSQL database initialized successfully. "
+        f"Tables created: {database_result.get('tables_created')}"
+    )
+
+    # Initialize workflow tracing.
     initialize_workflow_tracing()
+    print("Workflow tracing initialized successfully.")
     print("Workflow tracing initialized successfully.")
     """Initialize monitoring and recover interrupted tasks."""
 
@@ -270,42 +282,29 @@ def research_report_details_endpoint(report_filename: str):
     return result
 
 # ============================================================
-#  DOWNLOAD RESEARCH REPORT
+# DOWNLOAD RESEARCH REPORT FROM POSTGRESQL
 # ============================================================
 
 @app.get("/research/reports/{report_filename}/download")
 def download_research_report_endpoint(report_filename: str):
-    """
-    Download a saved Markdown research report.
-    """
+    """Download a Markdown report stored in PostgreSQL."""
 
-    try:
-        # Validate the filename and retrieve the report path.
-        report_path = get_research_report_path(report_filename)
+    result = get_research_report(report_filename)
 
-    except ValueError as error:
-        # Return HTTP 400 for an invalid filename.
-        from fastapi import HTTPException
-
-        raise HTTPException(
-            status_code=400,
-            detail=str(error),
-        )
-
-    except FileNotFoundError as error:
-        # Return HTTP 404 when the report does not exist.
-        from fastapi import HTTPException
-
+    if not result["success"]:
         raise HTTPException(
             status_code=404,
-            detail=str(error),
+            detail=result["message"],
         )
 
-    # Return the actual Markdown file as a downloadable attachment.
-    return FileResponse(
-        path=report_path,
-        media_type="text/markdown",
-        filename=report_path.name,
+    return Response(
+        content=result["report_content"],
+        media_type="text/markdown; charset=utf-8",
+        headers={
+            "Content-Disposition": (
+                f'attachment; filename="{result["report_filename"]}"'
+            )
+        },
     )
 
 # Define the structure of the health-check response.

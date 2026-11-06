@@ -11,3 +11,6 @@ tavily-python
 langgraph
 langchain-core
 langchain-groq
+
+# PostgreSQL database driver
+psycopg[binary]

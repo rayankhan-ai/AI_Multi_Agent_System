@@ -1,0 +1,13 @@
+ .gitignore                           | 14 [32m+++++++++++[m[31m-[m
+ backend/services/agent_analytics.py  |  6 [32m+[m[31m----[m
+ backend/services/agent_monitor.py    |  7 [32m+[m[31m-----[m
+ backend/services/report_retrieval.py |  4 [32m+[m[31m---[m
+ backend/services/report_service.py   | 14 [32m++++[m[31m--------[m
+ backend/services/research_history.py |  5 [32m+[m[31m---[m
+ backend/services/retry_manager.py    |  5 [32m+[m[31m---[m
+ backend/services/storage_paths.py    | 44 [32m++++++++++++++++++++++++++++++++++++[m
+ backend/services/system_monitor.py   |  6 [32m+[m[31m----[m
+ backend/services/task_database.py    |  7 [32m+[m[31m-----[m
+ backend/services/workflow_tracer.py  |  6 [32m+[m[31m----[m
+ render.yaml                          | 39 [32m++++++++++++++++++++++++++++++++[m
+ 12 files changed, 109 insertions(+), 48 deletions(-)

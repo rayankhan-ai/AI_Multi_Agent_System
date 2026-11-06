@@ -1,76 +1,67 @@
-# Import SQLite so tasks can be stored permanently.
-import sqlite3
+# ============================================================
+# POSTGRESQL TASK DATABASE
+# AI MULTI-AGENT RESEARCH & AUTOMATION SYSTEM
+# ============================================================
 
-# Import JSON so task results can be stored in the database.
 import json
 
-# Import Path to manage the database file path.
-from backend.services.storage_paths import DATABASE_PATH
+# Use the centralized PostgreSQL connection.
+from backend.services.database import (
+    get_connection as postgres_connection,
+    initialize_database,
+)
+
+
+# ============================================================
+# DATABASE CONNECTION
+# ============================================================
 
 def get_connection():
-    """Create a database connection with dictionary-like rows."""
+    """
+    Return a centralized PostgreSQL connection.
 
-    connection = sqlite3.connect(
-        str(DATABASE_PATH),
-        timeout=30,
-    )
+    Kept as a separate function to preserve compatibility
+    with existing services importing task_database.get_connection.
+    """
 
-    # Allow database rows to be accessed by column name.
-    connection.row_factory = sqlite3.Row
+    return postgres_connection()
 
-    return connection
 
+# ============================================================
+# INITIALIZE TASK DATABASE
+# ============================================================
 
 def initialize_task_database():
-    """Create the task table and add columns required by newer versions."""
+    """
+    Initialize the PostgreSQL schema required by task management.
 
-    with get_connection() as connection:
+    The centralized initializer also ensures that priority,
+    dependency, and other project tables exist.
+    """
 
-        # Create the table if it does not already exist.
-        connection.execute(
-            """
-            CREATE TABLE IF NOT EXISTS research_tasks (
-                task_id TEXT PRIMARY KEY,
-                research_question TEXT NOT NULL,
-                status TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                started_at TEXT,
-                finished_at TEXT,
-                error TEXT,
-                report_filename TEXT,
-                quality_score INTEGER,
-                result_json TEXT,
-                retry_count INTEGER NOT NULL DEFAULT 0
-            )
-            """
-        )
+    return initialize_database()
 
-        # Read the existing table columns.
-        existing_columns = {
-            row["name"]
-            for row in connection.execute(
-                "PRAGMA table_info(research_tasks)"
-            ).fetchall()
-        }
 
-        # Add retry_count to databases created by the earlier version.
-        if "retry_count" not in existing_columns:
-            connection.execute(
-                """
-                ALTER TABLE research_tasks
-                ADD COLUMN retry_count INTEGER NOT NULL DEFAULT 0
-                """
-            )
-
-        connection.commit()
-
+# ============================================================
+# SAVE TASK
+# ============================================================
 
 def save_task(task):
-    """Insert a task or update an existing task."""
+    """
+    Insert a new task or update an existing task.
+
+    Existing task priority is preserved when updating a task.
+    """
 
     initialize_task_database()
 
+    result_json = json.dumps(
+        task.get("result"),
+        ensure_ascii=False,
+    )
+
     with get_connection() as connection:
+
         connection.execute(
             """
             INSERT INTO research_tasks (
@@ -86,18 +77,24 @@ def save_task(task):
                 result_json,
                 retry_count
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
-            ON CONFLICT(task_id) DO UPDATE SET
-                research_question = excluded.research_question,
-                status = excluded.status,
-                started_at = excluded.started_at,
-                finished_at = excluded.finished_at,
-                error = excluded.error,
-                report_filename = excluded.report_filename,
-                quality_score = excluded.quality_score,
-                result_json = excluded.result_json,
-                retry_count = excluded.retry_count
+            VALUES (
+                %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s
+            )
+
+            ON CONFLICT (task_id)
+            DO UPDATE SET
+
+                research_question = EXCLUDED.research_question,
+                status = EXCLUDED.status,
+                started_at = EXCLUDED.started_at,
+                finished_at = EXCLUDED.finished_at,
+                error = EXCLUDED.error,
+                report_filename = EXCLUDED.report_filename,
+                quality_score = EXCLUDED.quality_score,
+                result_json = EXCLUDED.result_json,
+                retry_count = EXCLUDED.retry_count
             """,
             (
                 task["task_id"],
@@ -109,16 +106,38 @@ def save_task(task):
                 task.get("error"),
                 task.get("report_filename"),
                 task.get("quality_score"),
-                json.dumps(
-                    task.get("result"),
-                    ensure_ascii=False,
-                ),
+                result_json,
                 task.get("retry_count", 0),
             ),
         )
 
-        connection.commit()
 
+# ============================================================
+# CONVERT DATABASE ROW INTO TASK
+# ============================================================
+
+def convert_row_to_task(row):
+    """Convert a PostgreSQL task record into an API-friendly dictionary."""
+
+    if row is None:
+        return None
+
+    task = dict(row)
+
+    task["result"] = (
+        json.loads(task["result_json"])
+        if task.get("result_json")
+        else None
+    )
+
+    task.pop("result_json", None)
+
+    return task
+
+
+# ============================================================
+# GET ONE SAVED TASK
+# ============================================================
 
 def get_saved_task(task_id):
     """Retrieve one task using its ID."""
@@ -126,32 +145,22 @@ def get_saved_task(task_id):
     initialize_task_database()
 
     with get_connection() as connection:
+
         row = connection.execute(
             """
             SELECT *
             FROM research_tasks
-            WHERE task_id = ?
+            WHERE task_id = %s
             """,
             (task_id,),
         ).fetchone()
 
-    if row is None:
-        return None
+    return convert_row_to_task(row)
 
-    task = dict(row)
 
-    # Convert stored JSON back into a Python object.
-    task["result"] = (
-        json.loads(task["result_json"])
-        if task.get("result_json")
-        else None
-    )
-
-    # Do not expose the database's internal JSON column.
-    task.pop("result_json", None)
-
-    return task
-
+# ============================================================
+# GET ALL SAVED TASKS
+# ============================================================
 
 def get_saved_tasks():
     """Retrieve all tasks, newest first."""
@@ -159,6 +168,7 @@ def get_saved_tasks():
     initialize_task_database()
 
     with get_connection() as connection:
+
         rows = connection.execute(
             """
             SELECT *
@@ -167,41 +177,36 @@ def get_saved_tasks():
             """
         ).fetchall()
 
-    tasks = []
+    return [
+        convert_row_to_task(row)
+        for row in rows
+    ]
 
-    for row in rows:
-        task = dict(row)
 
-        task["result"] = (
-            json.loads(task["result_json"])
-            if task.get("result_json")
-            else None
-        )
-
-        task.pop("result_json", None)
-
-        tasks.append(task)
-
-    return tasks
-
+# ============================================================
+# RECOVER INTERRUPTED TASKS
+# ============================================================
 
 def recover_interrupted_tasks():
     """
-    Mark tasks left in 'running' status as failed.
+    Mark tasks left in running status as failed.
 
-    This function is intended to run when the backend starts.
+    Intended to run when the backend starts.
     """
 
     initialize_task_database()
 
     with get_connection() as connection:
+
         cursor = connection.execute(
             """
             UPDATE research_tasks
+
             SET
                 status = 'failed',
                 finished_at = CURRENT_TIMESTAMP,
-                error = ?
+                error = %s
+
             WHERE status = 'running'
             """,
             (
@@ -209,7 +214,5 @@ def recover_interrupted_tasks():
                 "You can retry the task.",
             ),
         )
-
-        connection.commit()
 
         return cursor.rowcount

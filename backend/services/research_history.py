@@ -1,41 +1,26 @@
 # ============================================================
-# PART 18 - RESEARCH HISTORY SERVICE
+# POSTGRESQL RESEARCH HISTORY
 # ============================================================
 
-# json reads and writes metadata using JSON format.
-import json
-
-# datetime handles dates and times.
 from datetime import datetime, timezone
-
-# Path manages filesystem paths.
-from pathlib import Path
-
-# Any and Dict describe dictionary data types.
 from typing import Any, Dict
-
-# uuid4 generates a unique ID for each research task.
 from uuid import uuid4
 
-from backend.services.storage_paths import REPORTS_DIRECTORY
+from psycopg.types.json import Jsonb
 
-def create_research_metadata(research_question: str) -> Dict[str, str]:
-    """
-    Create unique metadata for a new research task.
-    """
+from backend.services.database import get_connection
 
-    # Generate a unique identifier.
-    research_id = str(uuid4())
 
-    # Record the current UTC date and time.
-    research_timestamp = datetime.now(timezone.utc).isoformat(
-        timespec="seconds"
-    )
+def create_research_metadata(
+    research_question: str,
+) -> Dict[str, str]:
+    """Create metadata for a research execution."""
 
-    # Return the initial metadata.
     return {
-        "research_id": research_id,
-        "research_timestamp": research_timestamp,
+        "research_id": str(uuid4()),
+        "research_timestamp": datetime.now(
+            timezone.utc
+        ).isoformat(timespec="seconds"),
         "research_question": research_question.strip(),
     }
 
@@ -48,32 +33,16 @@ def save_research_metadata(
     accepted_sources: int = 0,
     rejected_sources: int = 0,
 ) -> Dict[str, Any]:
-    """
-    Save research metadata as a JSON file.
-    """
+    """Save research metadata in PostgreSQL."""
 
-    # Create the reports folder if it does not exist.
-    REPORTS_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    if not report_filename:
+        raise ValueError("A report filename is required.")
 
-    # Remove the extension from the Markdown filename.
-    report_stem = Path(report_filename).stem
+    research_id = metadata.get("research_id")
 
-    # Use the same filename for the JSON metadata.
-    metadata_filename = f"{report_stem}.json"
+    if not research_id:
+        raise ValueError("Research ID is missing from metadata.")
 
-    # Resolve the reports folder to its absolute path.
-    reports_root = REPORTS_DIRECTORY.resolve()
-
-    # Build the full path to the metadata file.
-    metadata_path = (reports_root / metadata_filename).resolve()
-
-    # Prevent the metadata file from being saved outside reports.
-    if metadata_path.parent != reports_root:
-        raise ValueError(
-            "Invalid metadata filename: path must remain inside the reports directory."
-        )
-
-    # Combine the research details and statistics.
     complete_metadata = {
         **metadata,
         "report_filename": report_filename,
@@ -85,102 +54,166 @@ def save_research_metadata(
         },
     }
 
-    # Convert the metadata dictionary into readable JSON.
-    metadata_path.write_text(
-        json.dumps(
-            complete_metadata,
-            indent=4,
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
+    created_at = metadata.get(
+        "research_timestamp",
+        datetime.now(timezone.utc).isoformat(),
     )
 
-    # Return information about the saved JSON file.
+    with get_connection() as connection:
+
+        connection.execute(
+            """
+            INSERT INTO research_metadata (
+                research_id,
+                report_filename,
+                quality_score,
+                total_sources,
+                accepted_sources,
+                rejected_sources,
+                metadata,
+                created_at
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+
+            ON CONFLICT (research_id)
+            DO UPDATE SET
+                report_filename = EXCLUDED.report_filename,
+                quality_score = EXCLUDED.quality_score,
+                total_sources = EXCLUDED.total_sources,
+                accepted_sources = EXCLUDED.accepted_sources,
+                rejected_sources = EXCLUDED.rejected_sources,
+                metadata = EXCLUDED.metadata,
+                created_at = EXCLUDED.created_at
+            """,
+            (
+                research_id,
+                report_filename,
+                quality_score,
+                total_sources,
+                accepted_sources,
+                rejected_sources,
+                Jsonb(complete_metadata),
+                created_at,
+            ),
+        )
+
     return {
         "success": True,
-        "metadata_filename": metadata_filename,
-        "metadata_path": str(metadata_path),
+        "metadata_filename": report_filename.replace(
+            ".md",
+            ".json",
+        ),
+        "metadata_path": (
+            f"database://research_metadata/{research_id}"
+        ),
         "metadata": complete_metadata,
     }
 
 
 def get_research_history() -> Dict[str, Any]:
-    """
-    Read saved JSON metadata files and return research history.
-    """
+    """Retrieve research history from PostgreSQL."""
 
-    # Create an empty list for the history records.
+    with get_connection() as connection:
+
+        rows = connection.execute(
+            """
+            SELECT
+                research_id,
+                report_filename,
+                quality_score,
+                total_sources,
+                accepted_sources,
+                rejected_sources,
+                metadata,
+                created_at
+            FROM research_metadata
+            ORDER BY created_at DESC
+            """
+        ).fetchall()
+
     history = []
 
-    # Create the reports folder if it does not exist.
-    REPORTS_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    for row in rows:
 
-    # Find every JSON metadata file in the reports folder.
-    metadata_files = REPORTS_DIRECTORY.glob("*.json")
+        record = dict(row)
 
-    # Read each metadata file.
-    for metadata_file in metadata_files:
+        # PostgreSQL JSONB is returned as a Python dictionary.
+        metadata = record.pop("metadata") or {}
 
-        try:
-            # Read the JSON file as text.
-            metadata_text = metadata_file.read_text(
-                encoding="utf-8"
-            )
+        # Preserve the original history response structure.
+        history_record = {
+            **metadata,
+            "research_id": record["research_id"],
+            "report_filename": record["report_filename"],
+            "quality_score": record["quality_score"] or 0,
+            "total_sources": record["total_sources"] or 0,
+            "accepted_sources": record["accepted_sources"] or 0,
+            "rejected_sources": record["rejected_sources"] or 0,
+            "metadata_filename": record["report_filename"].replace(
+                ".md",
+                ".json",
+            ),
+        }
 
-            # Convert the JSON text into a Python dictionary.
-            metadata = json.loads(metadata_text)
+        history.append(history_record)
 
-            # Add the filename for reference.
-            metadata["metadata_filename"] = metadata_file.name
-
-            # Add this research task to the history list.
-            history.append(metadata)
-
-        except (json.JSONDecodeError, OSError) as error:
-            # Skip invalid or unreadable metadata files.
-            print(
-                f"Warning: Could not read {metadata_file.name}: {error}"
-            )
-
-    # Sort the history so the newest research appears first.
-    history.sort(
-        key=lambda item: item.get("research_timestamp", ""),
-        reverse=True,
-    )
-
-    # Return the history and the total number of records.
     return {
         "success": True,
         "total_records": len(history),
         "history": history,
     }
-    
-# ============================================================
-# PART 19 - GET ONE RESEARCH RECORD
-# ============================================================
 
-def get_research_by_id(research_id: str) -> Dict[str, Any]:
-    """
-    Retrieve one research record using its unique research ID.
-    """
 
-    # Retrieve all saved research history records.
-    history_result = get_research_history()
+def get_research_by_id(
+    research_id: str,
+) -> Dict[str, Any]:
+    """Retrieve one research history record by its ID."""
 
-    # Search through the saved records.
-    for record in history_result["history"]:
+    with get_connection() as connection:
 
-        # Compare the requested ID with the saved ID.
-        if record.get("research_id") == research_id:
+        row = connection.execute(
+            """
+            SELECT
+                research_id,
+                report_filename,
+                quality_score,
+                total_sources,
+                accepted_sources,
+                rejected_sources,
+                metadata,
+                created_at
+            FROM research_metadata
+            WHERE research_id = %s
+            """,
+            (research_id,),
+        ).fetchone()
 
-            # Return the matching research record.
-            return {
-                "success": True,
-                "research": record,
-            }
+    if not row:
+        return {
+            "success": False,
+            "message": (
+                f"No research record found for ID: {research_id}"
+            ),
+        }
 
-    # Return a not-found response if the ID does not exist.
+    record = dict(row)
+    metadata = record.pop("metadata") or {}
+
+    research = {
+        **metadata,
+        "research_id": record["research_id"],
+        "report_filename": record["report_filename"],
+        "quality_score": record["quality_score"] or 0,
+        "total_sources": record["total_sources"] or 0,
+        "accepted_sources": record["accepted_sources"] or 0,
+        "rejected_sources": record["rejected_sources"] or 0,
+        "metadata_filename": record["report_filename"].replace(
+            ".md",
+            ".json",
+        ),
+    }
+
     return {
-        "success": False,
-        "message": f"No research record found for ID: {research_id}",
+        "success": True,
+        "research": research,
     }

@@ -1,26 +1,14 @@
-# backend/services/agent_monitor.py
+# ============================================================
+# POSTGRESQL AGENT EXECUTION MONITOR
+# ============================================================
 
-# Import SQLite for persistent agent logs.
-import sqlite3
-
-# Import JSON to serialize optional input/output information.
-import json
-
-# Import UUID generation for unique log IDs.
 from uuid import uuid4
-
-# Import UTC timestamps.
 from datetime import datetime, timezone
-
-# Import Path for reliable database location.
-from pathlib import Path
-from backend.services.storage_paths import DATABASE_PATH
-
-# Import typing helpers.
 from typing import Any, Dict, Optional
 
+from backend.services.database import get_connection
 
-# Use the same database file as the task manager.
+
 def get_timestamp() -> str:
     """Return the current UTC timestamp."""
 
@@ -29,27 +17,12 @@ def get_timestamp() -> str:
     )
 
 
-def get_connection():
-    """Create a connection to the SQLite database."""
-
-    connection = sqlite3.connect(
-        str(DATABASE_PATH),
-        timeout=30,
-    )
-
-    # Return rows that can be accessed using column names.
-    connection.row_factory = sqlite3.Row
-
-    return connection
-
-
 def initialize_agent_logs():
-    """Create the agent execution log table."""
+    """Initialize PostgreSQL agent execution logs."""
 
     with get_connection() as connection:
 
-        connection.execute(
-            """
+        connection.execute("""
             CREATE TABLE IF NOT EXISTS agent_execution_logs (
                 log_id TEXT PRIMARY KEY,
                 task_id TEXT NOT NULL,
@@ -57,24 +30,22 @@ def initialize_agent_logs():
                 status TEXT NOT NULL,
                 started_at TEXT NOT NULL,
                 finished_at TEXT,
-                duration_seconds REAL,
+                duration_seconds DOUBLE PRECISION,
                 input_summary TEXT,
                 output_summary TEXT,
                 error_message TEXT
             )
-            """
-        )
+        """)
 
-        # Indexing makes task-specific log retrieval faster.
-        connection.execute(
-            """
-            CREATE INDEX IF NOT EXISTS
-            idx_agent_logs_task_id
+        connection.execute("""
+            CREATE INDEX IF NOT EXISTS idx_agent_logs_task_id
             ON agent_execution_logs(task_id)
-            """
-        )
+        """)
 
-        connection.commit()
+        connection.execute("""
+            CREATE INDEX IF NOT EXISTS idx_agent_logs_started_at
+            ON agent_execution_logs(started_at)
+        """)
 
 
 def start_agent_log(
@@ -82,11 +53,7 @@ def start_agent_log(
     agent_name: str,
     input_summary: Optional[str] = None,
 ) -> str:
-    """
-    Record that an agent has started.
-
-    Returns the unique log ID used to finish the log later.
-    """
+    """Record the start of an agent execution."""
 
     initialize_agent_logs()
 
@@ -104,7 +71,7 @@ def start_agent_log(
                 started_at,
                 input_summary
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
                 log_id,
@@ -116,8 +83,6 @@ def start_agent_log(
             ),
         )
 
-        connection.commit()
-
     return log_id
 
 
@@ -127,7 +92,7 @@ def finish_agent_log(
     output_summary: Optional[str] = None,
     error_message: Optional[str] = None,
 ):
-    """Record an agent's completion or failure."""
+    """Record agent completion or failure."""
 
     if status not in {"completed", "failed"}:
         raise ValueError(
@@ -138,52 +103,51 @@ def finish_agent_log(
 
     with get_connection() as connection:
 
-        # Retrieve the agent's start time.
         row = connection.execute(
             """
             SELECT started_at
             FROM agent_execution_logs
-            WHERE log_id = ?
+            WHERE log_id = %s
             """,
             (log_id,),
         ).fetchone()
 
-        # Reject an unknown log ID.
         if row is None:
             raise ValueError(
                 f"Agent log not found: {log_id}"
             )
 
-        started_at = datetime.fromisoformat(
-            row["started_at"]
-        )
+        started_at = row["started_at"]
+
+        if isinstance(started_at, str):
+            started_at = datetime.fromisoformat(started_at)
 
         finished_at = datetime.now(timezone.utc)
 
-        # Calculate how long the agent took.
+        if started_at.tzinfo is None:
+            started_at = started_at.replace(
+                tzinfo=timezone.utc
+            )
+
         duration_seconds = max(
             0.0,
-            (
-                finished_at - started_at
-            ).total_seconds(),
+            (finished_at - started_at).total_seconds(),
         )
 
         connection.execute(
             """
             UPDATE agent_execution_logs
             SET
-                status = ?,
-                finished_at = ?,
-                duration_seconds = ?,
-                output_summary = ?,
-                error_message = ?
-            WHERE log_id = ?
+                status = %s,
+                finished_at = %s,
+                duration_seconds = %s,
+                output_summary = %s,
+                error_message = %s
+            WHERE log_id = %s
             """,
             (
                 status,
-                finished_at.isoformat(
-                    timespec="milliseconds"
-                ),
+                finished_at.isoformat(timespec="milliseconds"),
                 round(duration_seconds, 3),
                 output_summary,
                 error_message,
@@ -191,12 +155,8 @@ def finish_agent_log(
             ),
         )
 
-        connection.commit()
 
-
-def get_agent_logs(
-    task_id: str,
-) -> Dict[str, Any]:
+def get_agent_logs(task_id: str) -> Dict[str, Any]:
     """Return execution logs for a specific research task."""
 
     initialize_agent_logs()
@@ -207,7 +167,7 @@ def get_agent_logs(
             """
             SELECT *
             FROM agent_execution_logs
-            WHERE task_id = ?
+            WHERE task_id = %s
             ORDER BY started_at ASC
             """,
             (task_id,),
@@ -243,7 +203,8 @@ def get_agent_logs(
         "failed": failed_count,
         "running": running_count,
         "total_agent_duration_seconds": round(
-            total_duration, 3
+            total_duration,
+            3,
         ),
         "logs": logs,
     }
@@ -252,11 +213,10 @@ def get_agent_logs(
 def get_recent_agent_logs(
     limit: int = 100,
 ) -> Dict[str, Any]:
-    """Return recent agent executions across all tasks."""
+    """Return recent executions across all research tasks."""
 
     initialize_agent_logs()
 
-    # Restrict the limit to a safe range.
     limit = max(1, min(limit, 500))
 
     with get_connection() as connection:
@@ -266,7 +226,7 @@ def get_recent_agent_logs(
             SELECT *
             FROM agent_execution_logs
             ORDER BY started_at DESC
-            LIMIT ?
+            LIMIT %s
             """,
             (limit,),
         ).fetchall()
@@ -274,7 +234,6 @@ def get_recent_agent_logs(
     logs = [dict(row) for row in rows]
 
     return {
-        "success": True,
         "total_logs": len(logs),
         "logs": logs,
     }
