@@ -1,74 +1,78 @@
-# System Architecture
+# AI Multi-Agent Research & Automation System — Architecture
 
 ## 1. Overview
 
-The AI Multi-Agent Research & Automation System uses a
-frontend-backend architecture with an AI-powered multi-agent
-workflow.
+The AI Multi-Agent Research & Automation System uses a frontend-backend architecture with a coordinated AI research workflow.
 
-The frontend communicates with the FastAPI backend.
-The backend coordinates specialized AI agents using LangGraph.
+The React frontend communicates with a FastAPI backend. The backend executes specialized AI agents using LangGraph, integrates Groq for language-model capabilities, and uses Tavily for web research.
+
+Supporting backend services provide task management, scheduling, source validation, monitoring, retries, analytics, research history, and workflow tracing.
 
 ## 2. High-Level System Architecture
 
 ```mermaid
 flowchart TD
-
-    U["User"]
+    USER["User"]
 
     subgraph FRONTEND["Frontend Layer"]
         UI["React Dashboard"]
-        DASH["Dashboard and Analytics"]
+        DASH["Overview and Analytics"]
         TASK["Task Manager"]
         REPORT["Research Reports"]
+        HISTORY["Research History"]
     end
 
     subgraph BACKEND["Backend Layer - FastAPI"]
         API["FastAPI Application"]
-        ROUTES["API Endpoints"]
+        ROUTES["REST API Endpoints"]
     end
 
-    subgraph AGENTS["Multi-Agent Workflow - LangGraph"]
+    subgraph WORKFLOW["AI Workflow - LangGraph"]
         COORD["Coordinator Agent"]
-        RES["Researcher Agent"]
-        VALID["Source Validator"]
+        RESEARCH["Researcher Agent"]
+        VALIDATE["Source Validator"]
         ANALYST["Analyst Agent"]
         FACT["Fact Checker Agent"]
         QUALITY["Quality Scorer"]
         WRITER["Report Writer Agent"]
     end
 
-    subgraph SERVICES["Backend Services"]
-        MON["Agent Monitoring"]
-        RETRY["Retry Manager"]
-        HISTORY["Research History"]
+    subgraph SERVICES["Supporting Backend Services"]
+        TASKS["Task Manager"]
+        SCHEDULER["Task Scheduler"]
+        PRIORITY["Priority and Dependencies"]
+        MONITOR["Agent Monitoring"]
+        RETRY["Retry Management"]
         ANALYTICS["Agent Analytics"]
-        TASKDB["Task Management"]
+        TRACE["Workflow Tracing"]
+        RESEARCH_HISTORY["Research History"]
     end
 
     subgraph STORAGE["Storage Layer"]
-        DB[("SQLite Database")]
-        FILES[("Research Reports")]
+        DB[("Application Databases")]
+        FILES[("Research Reports and Metadata")]
     end
 
-    subgraph EXTERNAL["External AI Services"]
-        GROQ["Groq LLM"]
+    subgraph EXTERNAL["External Services"]
+        GROQ["Groq LLM API"]
         TAVILY["Tavily Search API"]
     end
 
-    U --> UI
+    USER --> UI
     UI --> DASH
     UI --> TASK
     UI --> REPORT
+    UI --> HISTORY
 
     UI <--> API
     API --> ROUTES
+
     ROUTES --> COORD
 
-    COORD --> RES
-    RES --> TAVILY
-    RES --> VALID
-    VALID --> ANALYST
+    COORD --> RESEARCH
+    RESEARCH --> TAVILY
+    RESEARCH --> VALIDATE
+    VALIDATE --> ANALYST
     ANALYST --> FACT
     FACT --> QUALITY
     QUALITY --> WRITER
@@ -76,89 +80,211 @@ flowchart TD
     COORD -.-> GROQ
     ANALYST -.-> GROQ
     FACT -.-> GROQ
+    QUALITY -.-> GROQ
     WRITER -.-> GROQ
 
-    ROUTES --> MON
-    ROUTES --> RETRY
-    ROUTES --> HISTORY
+    ROUTES --> TASKS
+    ROUTES --> SCHEDULER
+    ROUTES --> PRIORITY
+    ROUTES --> MONITOR
     ROUTES --> ANALYTICS
-    ROUTES --> TASKDB
+    ROUTES --> TRACE
+    ROUTES --> RESEARCH_HISTORY
 
-    TASKDB --> DB
-    HISTORY --> DB
+    TASKS --> DB
+    SCHEDULER --> DB
+    PRIORITY --> DB
+    MONITOR --> DB
+    TRACE --> DB
+    RESEARCH_HISTORY --> DB
+
     WRITER --> FILES
-    MON --> DB
+    FILES --> REPORT
+```
 
-## 3. Research Workflow
+*The diagram is a high-level conceptual representation of the system. Exact service interactions and storage configuration depend on their respective implementations.*
 
-The research workflow consists of specialized agents.
+## 3. Core Research Workflow
 
-![alt text](mermaid-diagram.png)
+The LangGraph workflow is implemented in:
 
-## 4. Component Responsibilities
+`backend/graph/workflow.py`
 
-| Component        | Responsibility                       |
-| ---------------- | ------------------------------------ |
-| React Frontend   | User interaction and dashboard       |
-| FastAPI          | Backend API and request handling     |
-| LangGraph        | Workflow orchestration               |
-| Coordinator      | Organizes research execution         |
-| Researcher       | Retrieves information from the web   |
-| Source Validator | Validates collected sources          |
-| Analyst          | Analyzes research information        |
-| Fact Checker     | Reviews research findings            |
-| Quality Scorer   | Evaluates research quality           |
-| Report Writer    | Generates final reports              |
-| Groq             | Provides LLM capabilities            |
-| Tavily           | Provides web search                  |
-| SQLite           | Stores task and research information |
+It uses the shared state defined in:
 
-## 5. Data Flow
+`backend/graph/state.py`
 
-1. The user submits a research question through React.
-2. React sends the request to FastAPI.
-3. FastAPI initiates the LangGraph workflow.
-4. The Coordinator organizes the research process.
+### Workflow Execution Sequence
+
+1. **Coordinator Agent**
+   - Receives the research question.
+   - Uses Groq to generate a structured research plan.
+   - Breaks the question into specific research tasks.
+
+2. **Researcher Agent**
+   - Searches for relevant information using Tavily.
+   - Collects research sources and supporting content.
+
+3. **Source Validator**
+   - Validates collected sources.
+   - Removes invalid and duplicate sources.
+   - Records accepted and rejected source counts.
+
+4. **Analyst Agent**
+   - Examines validated research evidence.
+   - Addresses the original question and research plan.
+   - Produces an evidence-based analysis.
+
+5. **Fact Checker Agent**
+   - Reviews research findings.
+   - Evaluates factual consistency.
+
+6. **Quality Scorer**
+   - Evaluates the research output.
+   - Produces quality scores and feedback.
+
+7. **Report Writer Agent**
+   - Generates the final research report.
+   - Saves the Markdown report.
+   - Saves corresponding research metadata.
+
+### Conditional Workflow Routing
+
+The workflow uses conditional routing after:
+
+- Coordinator execution.
+- Researcher execution.
+- Source validation.
+
+If a required stage fails or no usable research sources remain, the workflow stops instead of continuing with invalid input.
+
+## 4. Shared Research State
+
+The workflow uses a shared `ResearchState` TypedDict.
+
+Important state fields include:
+
+| Field | Purpose |
+|---|---|
+| `task_id` | Identifies the associated research task |
+| `research_question` | Original research question |
+| `research_plan` | Tasks generated by the Coordinator |
+| `search_results` | Validated research sources |
+| `analysis` | Analyst's findings |
+| `fact_check` | Fact-checking information |
+| `final_report` | Final generated report |
+| `status` | Current workflow status |
+| `error` | Error information |
+| `activity_log` | Workflow activity messages |
+| `total_sources` | Total collected sources |
+| `accepted_sources` | Validated sources |
+| `rejected_sources` | Rejected sources |
+| `quality_score` | Research quality score |
+| `quality_feedback` | Quality evaluation feedback |
+| `research_id` | Unique research identifier |
+| `research_timestamp` | Research execution timestamp |
+| `report_filename` | Generated report filename |
+| `metadata_filename` | Generated metadata filename |
+| `agent_log_ids` | Agent monitoring identifiers |
+
+## 5. Supporting Backend Services
+
+The core workflow is supported by additional backend services.
+
+| Service | Responsibility |
+|---|---|
+| Task Manager | Creates and manages research tasks |
+| Task Scheduler | Handles scheduled task execution |
+| Task Priority | Manages task priorities |
+| Task Dependencies | Tracks task dependencies |
+| Agent Monitor | Records agent execution |
+| Retry Manager | Handles eligible temporary failures |
+| Agent Analytics | Provides agent-related statistics |
+| Workflow Tracer | Records workflow execution events |
+| Research History | Maintains research records |
+| Source Validator | Validates and deduplicates sources |
+| Report Service | Saves generated reports |
+| System Monitor | Provides system monitoring information |
+
+## 6. Technology Architecture
+
+### Backend
+- Python
+- FastAPI
+- LangGraph
+- LangChain Core
+- Groq
+- Tavily
+- Pydantic
+- SQLite
+- PostgreSQL connectivity
+- Uvicorn
+
+### Frontend
+- React
+- Vite
+- Tailwind CSS
+- Lucide React
+- Recharts
+- React Markdown
+- Remark GFM
+
+### External Services
+- Groq API for language-model inference.
+- Tavily API for web search.
+
+## 7. Data Flow
+
+1. The user submits a research question through the React dashboard.
+2. The frontend sends the request to the FastAPI backend.
+3. The backend initiates the research workflow.
+4. The Coordinator creates a research plan.
 5. The Researcher collects information using Tavily.
-6. The Source Validator checks collected sources.
-7. The Analyst processes the research information.
+6. The Source Validator checks the collected sources.
+7. The Analyst processes the validated evidence.
 8. The Fact Checker reviews the findings.
-9. The Quality Scorer evaluates research quality.
-10. The Report Writer generates the final report.
-11. The backend stores relevant task information.
+9. The Quality Scorer evaluates the research output.
+10. The Report Writer generates and saves the final report.
+11. The backend records relevant task and research information.
 12. The frontend displays the research results.
 
-## 6. Technologies
-Python
-FastAPI
-LangGraph
-LangChain
-Groq
-Tavily
-SQLite
-React
-Vite
-Tailwind CSS
-Recharts
+## 8. Monitoring and Reliability
 
+The system includes supporting mechanisms for observing and managing execution:
 
-**Important:** This is a high-level conceptual architecture. The exact connections and execution order should match the implementation in `backend/graph/workflow.py`; we'll verify them before treating the diagram as the final technical specification.
+- Agent execution monitoring.
+- Workflow execution tracing.
+- Bounded retry handling for eligible temporary failures.
+- Task scheduling and prioritization.
+- Task dependency management.
+- Research history.
+- Audit history.
+- Workflow and agent analytics.
+- Error reporting and health checks.
 
-## Step 3 — Preview the architecture
+These components help monitor the application and manage research execution.
 
-Save the file.
+## 9. Deployment Architecture
 
-Open your GitHub repository and navigate to:
+The project is deployed using separate frontend and backend hosting.
 
-`docs/ARCHITECTURE.md`
+| Component | Deployment |
+|---|---|
+| Frontend | Cloudflare Workers |
+| Backend | Hostless |
+| Backend API | FastAPI |
+| Language Model | Groq |
+| Web Search | Tavily |
 
-GitHub supports Mermaid diagrams, so it should render the diagrams visually.
+### Production Links
 
-You can also use the official :contentReference[oaicite:0]{index=0} to preview them.
+- Frontend: https://ai-multi-agent-system.rayankhan9465.workers.dev
+- Backend: https://ai-multi-agent-backend.hostless.app
+- API Documentation: https://ai-multi-agent-backend.hostless.app/docs
+- Health Check: https://ai-multi-agent-backend.hostless.app/health
 
-## Step 4 — Commit the architecture documentation
+## 10. Conclusion
 
-Run:
+This architecture demonstrates how specialized AI agents, workflow orchestration, external AI services, backend services, databases, and a modern frontend can work together to automate research tasks.
 
-```powershell
-git add docs/ARCHITECTURE.md
+The system combines agent collaboration with task management, monitoring, source validation, quality evaluation, and structured report generation.

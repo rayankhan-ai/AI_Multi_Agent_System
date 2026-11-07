@@ -1,111 +1,115 @@
 # AI Multi-Agent Research & Automation System
 
-An intelligent research and automation platform powered by multiple AI agents. The system coordinates research, validates sources, analyzes information, fact-checks findings, evaluates research quality, and generates structured research reports.
+An intelligent, web-based research and automation platform powered by specialized AI agents. The system coordinates research planning, web search, source validation, information analysis, fact-checking, quality evaluation, and automated report generation.
 
-Built with **FastAPI, LangGraph, Groq, Tavily, React, and SQLite**.
+Built with **Python, FastAPI, LangGraph, Groq, Tavily, React, and SQLite**.
 
----
+[![Live Frontend](https://img.shields.io/badge/Live-Application-brightgreen)](https://ai-multi-agent-system.rayankhan9465.workers.dev)
+[![Backend](https://img.shields.io/badge/Backend-Online-blue)](https://ai-multi-agent-backend.hostless.app)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
+
+## Live Application
+
+- **Frontend:** https://ai-multi-agent-system.rayankhan9465.workers.dev
+- **Backend API:** https://ai-multi-agent-backend.hostless.app
+- **API Documentation:** https://ai-multi-agent-backend.hostless.app/docs
+- **Backend Health:** https://ai-multi-agent-backend.hostless.app/health
+
+The application provides a dashboard for submitting research questions, tracking tasks, monitoring agents, viewing analytics, and accessing generated research reports.
+
+*Note: Availability and response times depend on the free hosting provider.*
 
 ## Project Overview
 
-The AI Multi-Agent Research & Automation System is designed to automate complex research tasks through a coordinated workflow of specialized AI agents.
+Traditional research workflows often require manually searching multiple websites, reviewing sources, analyzing information, checking factual consistency, and preparing reports.
 
-Instead of relying on a single AI model to perform every task, the system divides research into smaller stages. Each agent performs a specific responsibility, and the workflow coordinates their execution to produce a structured research report.
+This project automates much of that process through a coordinated multi-agent architecture.
 
-The platform provides a web-based dashboard for submitting research questions, monitoring tasks, viewing reports, and analyzing system activity.
+Each specialized agent performs a particular responsibility. LangGraph orchestrates the workflow, while FastAPI exposes the backend functionality to an interactive React dashboard.
 
 ## Key Features
 
-* **Multi-Agent Architecture:** Specialized agents collaborate to complete research tasks.
-* **AI Research Planning:** Organizes research questions into a structured workflow.
-* **Web Search Integration:** Retrieves relevant information using Tavily.
-* **Source Validation:** Checks research sources for quality and validity.
-* **AI Analysis:** Analyzes collected research information.
-* **Fact Checking:** Reviews findings for factual consistency.
-* **Research Quality Scoring:** Evaluates the quality of research results.
-* **Automated Report Generation:** Produces structured research reports.
-* **Task Management:** Stores and manages research tasks using SQLite.
-* **Research History:** Maintains records of previous research activities.
-* **Agent Monitoring:** Tracks agent execution and workflow activity.
-* **Retry Management:** Supports handling failed operations.
-* **Analytics Dashboard:** Displays research and agent-related information.
-* **REST API:** Provides backend functionality through FastAPI.
-* **React Dashboard:** Offers an interactive frontend for using the system.
+- **Multi-Agent Architecture:** Specialized AI agents collaborate through a coordinated workflow.
+- **Research Planning:** Organizes research questions into structured execution plans.
+- **Web Search:** Retrieves relevant information using Tavily.
+- **Source Validation:** Checks collected sources for quality and validity.
+- **AI Analysis:** Analyzes collected research information.
+- **Fact Checking:** Reviews findings for factual consistency.
+- **Quality Scoring:** Evaluates research output quality.
+- **Automated Report Generation:** Produces structured research reports.
+- **Task Management:** Creates, updates, and tracks research tasks.
+- **Task Scheduling:** Supports scheduled task execution.
+- **Priority Management:** Organizes tasks according to priority.
+- **Task Dependencies:** Supports dependency-aware task management.
+- **Research History:** Maintains records of previous research activities.
+- **Agent Monitoring:** Tracks agent execution and workflow activity.
+- **Retry Management:** Supports handling failed operations.
+- **Audit History:** Maintains workflow activity records.
+- **Analytics Dashboard:** Displays research and agent-related statistics.
+- **REST API:** Exposes backend capabilities through FastAPI.
+- **Interactive Frontend:** Provides a React-based dashboard.
 
 ## Multi-Agent Architecture
 
-The system uses a coordinated workflow built with LangGraph.
+The system uses LangGraph to coordinate specialized agents.
 
-### Main Workflow
+### Research Workflow
 
-1. **Coordinator:** Organizes the research task and prepares the workflow.
-2. **Researcher:** Searches for relevant information using Tavily.
-3. **Source Validator:** Validates collected research sources.
-4. **Analyst:** Examines and analyzes the collected information.
-5. **Fact Checker:** Reviews research findings for factual consistency.
-6. **Quality Scorer:** Evaluates the quality of the research.
-7. **Report Writer:** Generates the final research report.
+1. **Coordinator Agent:** Organizes the research task and prepares the workflow.
+2. **Researcher Agent:** Retrieves relevant information using Tavily.
+3. **Source Validator:** Checks collected sources.
+4. **Analyst Agent:** Examines and analyzes research information.
+5. **Fact Checker Agent:** Reviews research findings for factual consistency.
+6. **Quality Scorer:** Evaluates the quality of the research output.
+7. **Report Writer Agent:** Generates the final research report.
 
-### Workflow Overview
+### Workflow Diagram
 
-```text
-          User Research Question
-                    |
-                    v
-              Coordinator
-                    |
-                    v
-               Researcher
-                    |
-                    v
-             Source Validator
-                    |
-                    v
-                 Analyst
-                    |
-                    v
-              Fact Checker
-                    |
-                    v
-              Quality Scorer
-                    |
-                    v
-              Report Writer
-                    |
-                    v
-             Final Research Report
+```mermaid
+flowchart TD
+    U[User Research Question] --> C[Coordinator Agent]
+    C --> R[Researcher Agent]
+    R --> T[Tavily Web Search]
+    T --> V[Source Validator]
+    V --> A[Analyst Agent]
+    A --> F[Fact Checker Agent]
+    F --> Q[Quality Scorer]
+    Q --> W[Report Writer Agent]
+    W --> P[Final Research Report]
 ```
 
-The workflow is implemented using LangGraph and shared research state.
+The workflow uses shared research state to coordinate information between its stages.
 
 ## Technology Stack
 
 ### Backend
 
-| Technology     | Purpose                              |
-| -------------- | ------------------------------------ |
-| Python         | Core programming language            |
-| FastAPI        | Backend API framework                |
-| LangGraph      | Multi-agent workflow orchestration   |
-| LangChain Core | LLM integration components           |
-| ChatGroq       | Large language model integration     |
-| Tavily         | Web search and information retrieval |
-| Pydantic       | Data validation                      |
-| SQLite         | Task and research data storage       |
-| Uvicorn        | ASGI application server              |
-| Pytest         | Testing framework                    |
+| Technology | Purpose |
+|---|---|
+| Python | Core programming language |
+| FastAPI | Backend API framework |
+| LangGraph | Multi-agent workflow orchestration |
+| LangChain Core | LLM integration components |
+| Groq | Large language model integration |
+| Tavily | Web search and information retrieval |
+| Pydantic | Data validation |
+| SQLite | Task and research data storage |
+| PostgreSQL Driver | PostgreSQL connectivity |
+| Uvicorn | ASGI application server |
+| Pytest | Testing framework |
 
 ### Frontend
 
-| Technology     | Purpose                             |
-| -------------- | ----------------------------------- |
-| React 19       | User interface                      |
-| Vite           | Frontend development and build tool |
-| Tailwind CSS   | Styling                             |
-| Lucide React   | Interface icons                     |
-| Recharts       | Data visualization                  |
-| React Markdown | Markdown rendering                  |
-| Remark GFM     | GitHub-flavored Markdown support    |
+| Technology | Purpose |
+|---|---|
+| React 19 | User interface |
+| Vite | Frontend development and build tool |
+| Tailwind CSS | Styling |
+| Lucide React | Interface icons |
+| Recharts | Data visualization |
+| React Markdown | Markdown rendering |
+| Remark GFM | GitHub-flavored Markdown support |
 
 ## Project Structure
 
@@ -128,6 +132,7 @@ AI_Multi_Agent_System/
 │   ├── services/
 │   │   ├── agent_analytics.py
 │   │   ├── agent_monitor.py
+│   │   ├── database.py
 │   │   ├── monitored_agent.py
 │   │   ├── report_retrieval.py
 │   │   ├── report_service.py
@@ -145,11 +150,15 @@ AI_Multi_Agent_System/
 │   │
 │   ├── tools/
 │   ├── main.py
+│   ├── functional_test_tasks.py
+│   ├── functional_test_workflow.py
+│   ├── smoke_test_api.py
 │   └── test_*.py
 │
 ├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── assets/
 │   │   ├── App.jsx
 │   │   ├── App.css
 │   │   ├── index.css
@@ -158,143 +167,25 @@ AI_Multi_Agent_System/
 │   ├── package.json
 │   └── vite.config.js
 │
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── mermaid-diagram.png
+│
 ├── reports/
 ├── screenshots/
+├── tests/
 ├── requirements.txt
 ├── backend_openapi.json
 ├── backend_samples.json
+├── .gitignore
 └── README.md
 ```
 
-## Installation and Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/rayankhan-ai/AI_Multi_Agent_System.git
-```
-
-Move into the project directory:
-
-```bash
-cd AI_Multi_Agent_System
-```
-
-### 2. Set Up the Python Environment
-
-Create a virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-Activate it on Windows PowerShell:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-Install the backend dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Configure Environment Variables
-
-Create a `.env` file in the project root.
-
-Add your own API credentials:
-
-```env
-GROQ_API_KEY=your_groq_api_key
-TAVILY_API_KEY=your_tavily_api_key
-```
-
-Never upload your actual API keys or `.env` file to GitHub.
-
-API providers:
-
-* Groq: https://console.groq.com/
-* Tavily: https://tavily.com/
-
-### 4. Configure the Frontend
-
-Move into the frontend directory:
-
-```powershell
-cd frontend
-```
-
-Install dependencies:
-
-```powershell
-npm install
-```
-
-Create a frontend `.env` file:
-
-```env
-VITE_API_URL=http://127.0.0.1:8000
-```
-
-Return to the project root:
-
-```powershell
-cd ..
-```
-
-## Running the Application
-
-You need to run the backend and frontend in separate terminals.
-
-### Start the Backend
-
-From the project root, activate the virtual environment and execute:
-
-```powershell
-python -m uvicorn backend.main:app --reload
-```
-
-Backend:
-
-```text
-http://127.0.0.1:8000
-```
-
-Interactive API documentation:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-### Start the Frontend
-
-Open another PowerShell terminal:
-
-```powershell
-cd AI_Multi_Agent_System\frontend
-```
-
-Start the development server:
-
-```powershell
-npm run dev
-```
-
-Frontend:
-
-```text
-http://localhost:5173
-```
-
-The frontend communicates with the backend through the configured `VITE_API_URL`.
-
 ## Application Screenshots
 
-### 1. Dashboard
+### 1. Main Dashboard
 
-The main dashboard provides an overview of the AI Multi-Agent Research and Automation System.
+Overview of the research platform and its main components.
 
 ![Dashboard](screenshots/dashboard.png)
 
@@ -306,100 +197,231 @@ Submit research questions and initiate automated research workflows.
 
 ### 3. AI Agents
 
-Explore the specialized AI agents responsible for different research operations.
+Explore the specialized agents responsible for research operations.
 
 ![AI Agents](screenshots/ai-agents.png)
 
 ### 4. Task Manager
 
-Monitor and manage research tasks and their execution status.
+Monitor and manage research tasks and execution status.
 
 ![Task Manager](screenshots/task-manager.png)
 
 ### 5. Analytics Dashboard
 
-Visualize research activity and agent performance through analytics.
+Visualize research activity and agent performance.
 
 ![Analytics](screenshots/analytics.png)
 
 ### 6. Research Report
 
-View the structured research report generated by the multi-agent workflow.
+View the structured report generated by the multi-agent workflow.
 
 ![Research Report](screenshots/research-report.png)
 
+## Installation and Setup
+
+### Prerequisites
+
+- Python 3.11 or compatible version
+- Node.js and npm
+- Git
+- Groq API key
+- Tavily API key
+
+### 1. Clone the Repository
+
+```powershell
+git clone https://github.com/rayankhan-ai/AI_Multi_Agent_System.git
+cd AI_Multi_Agent_System
+```
+
+### 2. Create a Python Virtual Environment
+
+```powershell
+python -m venv .venv
+```
+
+Activate it:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Install backend dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+TAVILY_API_KEY=your_tavily_api_key
+```
+
+Obtain API credentials from:
+
+- Groq: https://console.groq.com/
+- Tavily: https://tavily.com/
+
+Never upload actual API credentials to GitHub.
+
+### 4. Configure the Frontend
+
+Move into the frontend directory:
+
+```powershell
+cd frontend
+```
+
+Install frontend dependencies:
+
+```powershell
+npm install
+```
+
+Create a `.env` file:
+
+```env
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+Return to the project root:
+
+```powershell
+cd ..
+```
+
+## Running the Application Locally
+
+Run the backend and frontend in separate terminals.
+
+### Start the Backend
+
+From the project root:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m uvicorn backend.main:app --reload
+```
+
+Backend:
+
+http://127.0.0.1:8000
+
+API documentation:
+
+http://127.0.0.1:8000/docs
+
+### Start the Frontend
+
+Open another terminal:
+
+```powershell
+cd frontend
+npm run dev
+```
+
+Frontend:
+
+http://localhost:5173
+
+The frontend communicates with the backend through `VITE_API_URL`.
 
 ## API Documentation
 
-FastAPI provides interactive API documentation through Swagger UI.
+The backend provides interactive API documentation through FastAPI Swagger UI.
 
-After starting the backend, visit:
+Local:
 
-```text
 http://127.0.0.1:8000/docs
-```
 
-The API provides functionality for research execution, task management, research history, reports, analytics, agent monitoring, and system health.
+Production:
+
+https://ai-multi-agent-backend.hostless.app/docs
+
+The API supports research execution, task management, scheduling, reports, research history, workflow monitoring, analytics, and health checks.
 
 ## Testing
 
-The backend includes test and functional test scripts for important components, including:
+The repository includes testing scripts for important backend components.
 
-* Research workflow
-* Source validation
-* Quality scoring
-* Report services
-* Research history
-* Retry management
-* Task management
-* API smoke testing
-* Groq and Tavily connectivity
+Examples include:
 
-Run the relevant test scripts from the project root or backend directory according to their imports and execution requirements.
+- Research workflow testing
+- Source validation
+- Quality scoring
+- Report services
+- Research history
+- Retry management
+- Task management
+- API smoke testing
+- Groq connectivity
+- Tavily connectivity
 
-## Security
+Run individual tests from the project root according to their module imports and environment requirements.
 
-* API credentials are stored in local environment files.
-* Environment files are excluded from version control.
-* Generated databases and research reports are kept out of the public repository.
-* API keys should never be committed to GitHub.
+Example:
+
+```powershell
+python -m pytest backend/test_quality_scorer.py -v
+```
+
+Build the frontend:
+
+```powershell
+cd frontend
+npm run build
+```
+
+## Security Considerations
+
+- API credentials are stored in environment variables.
+- `.env` files are excluded from version control.
+- Generated databases and reports are excluded from the public repository.
+- API keys must never be committed to GitHub.
+- Production credentials should be configured through the hosting provider's environment settings.
 
 ## Future Improvements
 
-Potential future enhancements include:
+Potential enhancements include:
 
-* Deployment to cloud hosting.
-* User authentication and role-based access.
-* More specialized research agents.
-* Advanced human-in-the-loop approval.
-* Improved research evaluation and benchmarking.
-* More advanced task scheduling and automation.
-* Exporting reports into additional formats.
-* Expanded automated testing.
+- User authentication and role-based access.
+- Human-in-the-loop research approval.
+- Additional specialized AI agents.
+- Advanced research evaluation and benchmarking.
+- More comprehensive automated testing.
+- Additional report export formats.
+- Improved scheduling and distributed task execution.
 
 ## Learning Outcomes
 
 This project demonstrates practical implementation of:
 
-* Agentic AI concepts
-* Multi-agent collaboration
-* LangGraph workflow orchestration
-* LLM integration with Groq
-* Retrieval of web information with Tavily
-* Source validation and fact-checking
-* AI-generated research reports
-* FastAPI backend development
-* React frontend integration
-* SQLite-based task management
-* Monitoring, analytics, and error handling
+- Agentic AI concepts
+- Multi-agent collaboration
+- LangGraph workflow orchestration
+- LLM integration with Groq
+- Web research using Tavily
+- Source validation and fact-checking
+- AI-powered research report generation
+- FastAPI backend development
+- React frontend integration
+- Database-backed task management
+- Task scheduling and prioritization
+- Monitoring, analytics, and error handling
+- Full-stack AI application deployment
 
 ## Author
 
 **Rayan Ahmad**
 
-Aspiring Agentic AI Engineer
-
 GitHub: https://github.com/rayankhan-ai
 
+Repository: https://github.com/rayankhan-ai/AI_Multi_Agent_System
 
 If you find this project useful, consider giving the repository a star!
