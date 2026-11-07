@@ -1266,28 +1266,25 @@ async def workflow_audit_history_endpoint(
             detail=str(error),
         )
 
+
 # ============================================================
-# - WORKFLOW AUDIT CSV EXPORT
-# ===========================================================
+# WORKFLOW AUDIT CSV EXPORT
+# ============================================================
 
 @app.get("/workflow/audit-history/export")
 async def export_workflow_audit_history_endpoint(
     status: str | None = None,
     priority: str | None = None,
     search: str | None = None,
-    ):
+):
     """
-    Export matching workflow audit records as a CSV file.
-
-
-    This endpoint exports all matching records, up to the
-    existing audit-history service's maximum page size per call.
+    Export all matching workflow audit records as a CSV file.
     """
 
-    # Create an in-memory text buffer for the CSV file.
+    # Create an in-memory CSV buffer.
     csv_buffer = io.StringIO()
 
-    # Define the columns included in the exported file.
+    # Define CSV columns.
     fieldnames = [
         "task_id",
         "research_question",
@@ -1301,26 +1298,25 @@ async def export_workflow_audit_history_endpoint(
         "error",
     ]
 
-    # Create a CSV writer.
+    # Create CSV writer.
     writer = csv.DictWriter(
         csv_buffer,
         fieldnames=fieldnames,
     )
 
-    # Write the CSV header row.
+    # Write CSV header.
     writer.writeheader()
 
     # Start from the first page.
     page = 1
 
-    # Track the total number of exported records.
+    # Track exported records.
     exported_records = 0
 
     try:
-        # Retrieve pages until every matching record is exported.
+        # Retrieve all matching audit records.
         while True:
 
-            # Get one page using the existing audit-history service.
             result = get_workflow_audit_history(
                 limit=100,
                 page=page,
@@ -1329,8 +1325,9 @@ async def export_workflow_audit_history_endpoint(
                 search=search,
             )
 
-            # Write each task record to the CSV buffer.
+            # Write records into CSV.
             for task in result["history"]:
+
                 csv_row = {
                     field: task.get(field)
                     for field in fieldnames
@@ -1339,15 +1336,33 @@ async def export_workflow_audit_history_endpoint(
                 writer.writerow(csv_row)
                 exported_records += 1
 
-            # Stop when there are no more matching records.
+            # Stop when all pages are processed.
             if page >= result["total_pages"]:
                 break
 
-            # Move to the next page.
             page += 1
 
     except ValueError as error:
+
         raise HTTPException(
             status_code=400,
             detail=str(error),
         )
+
+    # Get the generated CSV content.
+    csv_content = csv_buffer.getvalue()
+
+    # Close the buffer.
+    csv_buffer.close()
+
+    # Return a downloadable CSV file.
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": (
+                "attachment; filename=workflow_audit_history.csv"
+            ),
+            "X-Exported-Records": str(exported_records),
+        },
+    )
