@@ -3,6 +3,7 @@
 # ============================================================
 
 from datetime import datetime
+import threading
 
 import psycopg
 
@@ -10,47 +11,86 @@ from backend.services.database import get_connection
 from backend.services.task_database import initialize_task_database
 from backend.services.task_priority import PRIORITY_SCORES
 
+# Track whether dependency support has been initialized.
+_DEPENDENCIES_INITIALIZED = False
+
+# Prevent multiple threads from initializing dependencies simultaneously.
+_DEPENDENCIES_INITIALIZATION_LOCK = threading.Lock()
+
+# Store the initialization result.
+_DEPENDENCIES_INITIALIZATION_RESULT = None
 
 # ============================================================
 # STEP 1 - INITIALIZE DEPENDENCY SUPPORT
 # ============================================================
 
 def initialize_task_dependencies():
-    """Initialize PostgreSQL task dependency support."""
+    """Initialize PostgreSQL task dependency support only once."""
 
-    initialize_task_database()
+    global _DEPENDENCIES_INITIALIZED
+    global _DEPENDENCIES_INITIALIZATION_RESULT
 
-    with get_connection() as connection:
-        connection.execute("""
-            CREATE TABLE IF NOT EXISTS task_dependencies (
-                task_id TEXT NOT NULL
-                    REFERENCES research_tasks(task_id)
-                    ON DELETE CASCADE,
+    # Return the cached result if initialization already succeeded.
+    if _DEPENDENCIES_INITIALIZED:
+        result = _DEPENDENCIES_INITIALIZATION_RESULT.copy()
+        result["cached"] = True
+        return result
 
-                depends_on_task_id TEXT NOT NULL
-                    REFERENCES research_tasks(task_id)
-                    ON DELETE CASCADE,
+    # Ensure only one thread initializes dependency support.
+    with _DEPENDENCIES_INITIALIZATION_LOCK:
 
-                PRIMARY KEY (task_id, depends_on_task_id),
+        # Check again after acquiring the lock.
+        if _DEPENDENCIES_INITIALIZED:
+            result = _DEPENDENCIES_INITIALIZATION_RESULT.copy()
+            result["cached"] = True
+            return result
 
-                CHECK (task_id <> depends_on_task_id)
-            )
-        """)
+        # Ensure the central database schema exists.
+        initialize_task_database()
 
-        connection.execute("""
-            CREATE INDEX IF NOT EXISTS idx_dependencies_task
-            ON task_dependencies(task_id)
-        """)
+        # Create dependency support only during initialization.
+        with get_connection() as connection:
 
-        connection.execute("""
-            CREATE INDEX IF NOT EXISTS idx_dependencies_prerequisite
-            ON task_dependencies(depends_on_task_id)
-        """)
+            connection.execute("""
+                CREATE TABLE IF NOT EXISTS task_dependencies (
+                    task_id TEXT NOT NULL
+                        REFERENCES research_tasks(task_id)
+                        ON DELETE CASCADE,
 
-    return {
-        "success": True,
-        "message": "PostgreSQL task dependency support initialized.",
-    }
+                    depends_on_task_id TEXT NOT NULL
+                        REFERENCES research_tasks(task_id)
+                        ON DELETE CASCADE,
+
+                    PRIMARY KEY (task_id, depends_on_task_id),
+
+                    CHECK (task_id <> depends_on_task_id)
+                )
+            """)
+
+            connection.execute("""
+                CREATE INDEX IF NOT EXISTS idx_dependencies_task
+                ON task_dependencies(task_id)
+            """)
+
+            connection.execute("""
+                CREATE INDEX IF NOT EXISTS idx_dependencies_prerequisite
+                ON task_dependencies(depends_on_task_id)
+            """)
+
+        # Store the successful initialization result.
+        _DEPENDENCIES_INITIALIZATION_RESULT = {
+            "success": True,
+            "message": (
+                "PostgreSQL task dependency support initialized."
+            ),
+        }
+
+        _DEPENDENCIES_INITIALIZED = True
+
+        result = _DEPENDENCIES_INITIALIZATION_RESULT.copy()
+        result["cached"] = False
+
+        return result
 
 
 # ============================================================

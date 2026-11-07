@@ -4,6 +4,7 @@
 # ============================================================
 
 import os
+import threading
 from pathlib import Path
 
 import psycopg
@@ -25,7 +26,20 @@ load_dotenv(
 )
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+# ============================================================
+# DATABASE INITIALIZATION CACHE
+# ============================================================
 
+# Remember whether the schema has already been initialized
+# during the current backend process.
+_DATABASE_INITIALIZED = False
+
+# Prevent multiple threads from initializing the schema
+# simultaneously.
+_DATABASE_INITIALIZATION_LOCK = threading.Lock()
+
+# Store the successful initialization result.
+_DATABASE_INITIALIZATION_RESULT = None
 
 # ============================================================
 # DATABASE CONNECTION
@@ -260,28 +274,57 @@ DATABASE_INDEXES = [
 
 def initialize_database():
     """
-    Create all required PostgreSQL tables and indexes.
-
-    Existing records are preserved because we use
-    CREATE TABLE IF NOT EXISTS.
+    Initialize PostgreSQL tables and indexes only once
+    during the current backend process.
     """
 
-    with get_connection() as connection:
+    global _DATABASE_INITIALIZED
+    global _DATABASE_INITIALIZATION_RESULT
 
-        # Create tables.
-        for statement in DATABASE_SCHEMA:
-            connection.execute(statement)
+    # Return cached result if already initialized.
+    if _DATABASE_INITIALIZED:
+        result = _DATABASE_INITIALIZATION_RESULT.copy()
+        result["cached"] = True
+        return result
 
-        # Create indexes.
-        for statement in DATABASE_INDEXES:
-            connection.execute(statement)
+    # Prevent simultaneous initialization.
+    with _DATABASE_INITIALIZATION_LOCK:
 
-    return {
-        "success": True,
-        "tables_created": len(DATABASE_SCHEMA),
-        "indexes_created": len(DATABASE_INDEXES),
-        "message": "PostgreSQL database schema initialized successfully.",
-    }
+        # Check again after acquiring the lock.
+        if _DATABASE_INITIALIZED:
+            result = _DATABASE_INITIALIZATION_RESULT.copy()
+            result["cached"] = True
+            return result
+
+        # Connect to PostgreSQL.
+        with get_connection() as connection:
+
+            # Create database tables.
+            for statement in DATABASE_SCHEMA:
+                connection.execute(statement)
+
+            # Create database indexes.
+            for statement in DATABASE_INDEXES:
+                connection.execute(statement)
+
+        # Store successful initialization result.
+        _DATABASE_INITIALIZATION_RESULT = {
+            "success": True,
+            "tables_created": len(DATABASE_SCHEMA),
+            "indexes_created": len(DATABASE_INDEXES),
+            "message": (
+                "PostgreSQL database schema initialized successfully."
+            ),
+        }
+
+        # Mark initialization as completed.
+        _DATABASE_INITIALIZED = True
+
+        result = _DATABASE_INITIALIZATION_RESULT.copy()
+        result["cached"] = False
+
+        return result
+
 
 
 # ============================================================

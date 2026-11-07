@@ -97,9 +97,9 @@ from backend.services.task_priority import (
 
 from backend.services.task_scheduler import (
 initialize_task_scheduler,
-get_next_scheduled_task,
-get_scheduled_task_queue,
-get_scheduler_status,
+async_get_next_scheduled_task,
+async_get_scheduled_task_queue,
+async_get_scheduler_status,
 )
 
 from backend.services.task_dependencies import (
@@ -499,7 +499,10 @@ async def execute_research_task_endpoint(
         )
 
     # STEP 2: Check whether all prerequisite tasks are completed.
-    dependency_result = check_task_dependencies(task_id)
+    dependency_result = await asyncio.to_thread(
+        check_task_dependencies,
+        task_id,
+    )
 
     # STEP 3: Handle dependency-check failures.
     if not dependency_result.get("success"):
@@ -711,10 +714,11 @@ async def update_research_task_priority_endpoint(
 
     try:
         # Update the priority in the existing SQLite database.
-        result = update_task_priority(
-            task_id=task_id,
-            priority=priority,
-        )
+        result = await asyncio.to_thread(
+        update_task_priority,
+        task_id=task_id,
+        priority=priority,
+    )
 
     except ValueError as error:
         # Return a clear validation error for invalid priorities.
@@ -746,7 +750,10 @@ async def get_research_task_priority_endpoint(
     """Retrieve a task's priority and numerical score."""
 
     # Look up the task in the priority service.
-    result = get_task_priority(task_id)
+    result = await asyncio.to_thread(
+        get_task_priority,
+        task_id,
+    )
 
     # Return 404 if the task does not exist.
     if result is None:
@@ -787,10 +794,11 @@ async def list_tasks_by_priority_endpoint(
 
     try:
         # Retrieve the ordered task list.
-        result = get_tasks_by_priority(
-            status=status,
-            limit=limit,
-        )
+        result = await asyncio.to_thread(
+        get_tasks_by_priority,
+        status=status,
+        limit=limit,
+    )
 
     except ValueError as error:
         # Return a validation error for an invalid limit.
@@ -807,7 +815,9 @@ async def list_tasks_by_priority_endpoint(
 async def get_priority_statistics_endpoint():
     """Return task counts grouped by priority."""
 
-    return get_priority_statistics()
+    return await asyncio.to_thread(
+        get_priority_statistics
+    )
 
 # ============================================================
 
@@ -821,14 +831,14 @@ async def get_next_scheduled_task_endpoint():
     Preview the highest-priority pending task.
     This endpoint does not reserve or execute the task.
     """
-    return get_next_scheduled_task()
+    return await async_get_next_scheduled_task()
 @app.get("/scheduler/queue")
 async def get_scheduled_task_queue_endpoint(limit: int = 100):
     """
     Return pending research tasks in priority order.
     """
     try:
-        return get_scheduled_task_queue(limit=limit)
+        return await async_get_scheduled_task_queue(limit=limit)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error))
 @app.get("/scheduler/status")
@@ -836,7 +846,7 @@ async def get_scheduler_status_endpoint():
     """
     Return pending task counts for each priority level.
     """
-    return get_scheduler_status()
+    return await async_get_scheduler_status()
 
 @app.post("/scheduler/run-next")
 async def run_next_scheduled_task_endpoint(
@@ -849,7 +859,7 @@ async def run_next_scheduled_task_endpoint(
     """
 
     # Step 1: Preview the highest-priority pending task.
-    next_task = get_next_scheduled_task()
+    next_task = await async_get_next_scheduled_task()
 
     # Step 2: Stop if the queue contains no pending tasks.
     if not next_task.get("success") or not next_task.get("task"):
@@ -924,7 +934,7 @@ async def automatic_scheduler_worker():
         while not SCHEDULER_WORKER_STOP_REQUESTED:
 
             # Step 1: Preview the highest-priority pending task.
-            next_task = get_next_scheduled_task()
+            next_task = await async_get_next_scheduled_task()
 
             # Step 2: Wait when the queue is empty.
             if (
@@ -1086,7 +1096,9 @@ async def add_task_dependency_endpoint(
     Add a prerequisite task to a research task.
     """
 
-    result = add_task_dependency(
+    # Run synchronous database operations in a worker thread.
+    result = await asyncio.to_thread(
+        add_task_dependency,
         task_id=task_id,
         depends_on_task_id=request.depends_on_task_id,
     )
@@ -1126,7 +1138,11 @@ async def get_task_dependencies_endpoint(task_id: str):
     Retrieve the prerequisites of a research task.
     """
 
-    result = get_task_dependencies(task_id)
+    # Run the database query outside the event loop.
+    result = await asyncio.to_thread(
+        get_task_dependencies,
+        task_id,
+    )
 
     if not result["success"]:
         raise HTTPException(
@@ -1135,15 +1151,16 @@ async def get_task_dependencies_endpoint(task_id: str):
         )
 
     return result
-
-
 @app.get("/research/tasks/{task_id}/dependency-status")
 async def check_task_dependencies_endpoint(task_id: str):
     """
     Check whether all prerequisites are complete.
     """
 
-    result = check_task_dependencies(task_id)
+    result = await asyncio.to_thread(
+        check_task_dependencies,
+        task_id,
+    )
 
     if not result["success"]:
         raise HTTPException(
@@ -1161,7 +1178,11 @@ async def get_ready_tasks_endpoint(limit: int = 100):
     """
 
     try:
-        return get_ready_tasks(limit=limit)
+        # Execute the synchronous database query in a worker thread.
+        return await asyncio.to_thread(
+            get_ready_tasks,
+            limit=limit,
+        )
 
     except ValueError as error:
         raise HTTPException(
@@ -1180,11 +1201,11 @@ async def workflow_overview_endpoint():
     dependencies, and execution readiness.
     """
 
+    # Retrieve workflow information without blocking FastAPI.
+    overview = await asyncio.to_thread(
+        get_workflow_overview
+    )
 
-# Retrieve the workflow overview from the service.
-    overview = get_workflow_overview()
-
-# Return the structured workflow information.
     return overview
 
 # ============================================================
@@ -1198,7 +1219,9 @@ async def workflow_statistics_endpoint():
     """
     
     # Calculate statistics using the workflow service.
-    statistics = get_workflow_statistics()
+    statistics = await asyncio.to_thread(
+        get_workflow_statistics
+    )
 
     # Return the statistics as JSON.
     return statistics
@@ -1213,7 +1236,9 @@ async def workflow_health_endpoint():
     Return the health status of the research workflow.
     """
     # Generate the workflow health report.
-    health_report = get_workflow_health()
+    health_report = await asyncio.to_thread(
+        get_workflow_health
+    )
 
     # Return the report as JSON.
     return health_report
@@ -1251,7 +1276,8 @@ async def workflow_audit_history_endpoint(
 
     try:
         # Retrieve the requested page of audit records.
-        return get_workflow_audit_history(
+        return await asyncio.to_thread(
+            get_workflow_audit_history,
             limit=limit,
             status=status,
             priority=priority,
@@ -1317,7 +1343,8 @@ async def export_workflow_audit_history_endpoint(
         # Retrieve all matching audit records.
         while True:
 
-            result = get_workflow_audit_history(
+            result = await asyncio.to_thread(
+                get_workflow_audit_history,
                 limit=100,
                 page=page,
                 status=status,

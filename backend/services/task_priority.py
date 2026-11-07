@@ -3,6 +3,7 @@
 # ============================================================
 
 from typing import Optional
+import threading
 
 from backend.services.task_database import (
     get_connection,
@@ -23,37 +24,80 @@ PRIORITY_SCORES = {
 
 
 # ============================================================
+# PRIORITY INITIALIZATION CACHE
+# ============================================================
+
+_PRIORITY_INITIALIZED = False
+_PRIORITY_INITIALIZATION_LOCK = threading.Lock()
+_PRIORITY_INITIALIZATION_RESULT = None
+
+
+
+# ============================================================
+# INITIALIZE PRIORITY SUPPORT
+# ============================================================
+
+# ============================================================
 # INITIALIZE PRIORITY SUPPORT
 # ============================================================
 
 def initialize_priority_support():
-    """Ensure PostgreSQL priority support exists."""
+    """Initialize priority support once per backend process."""
 
-    initialize_task_database()
+    global _PRIORITY_INITIALIZED
+    global _PRIORITY_INITIALIZATION_RESULT
 
-    with get_connection() as connection:
+    # Return the cached result when already initialized.
+    if _PRIORITY_INITIALIZED:
+        result = _PRIORITY_INITIALIZATION_RESULT.copy()
+        result["cached"] = True
+        return result
 
-        connection.execute(
-            """
-            ALTER TABLE research_tasks
-            ADD COLUMN IF NOT EXISTS
-            priority TEXT NOT NULL DEFAULT 'normal'
-            """
-        )
+    # Protect initialization against concurrent calls.
+    with _PRIORITY_INITIALIZATION_LOCK:
 
-        connection.execute(
-            """
-            CREATE INDEX IF NOT EXISTS
-            idx_tasks_priority_status
-            ON research_tasks(status, priority, created_at)
-            """
-        )
+        # Check again after acquiring the lock.
+        if _PRIORITY_INITIALIZED:
+            result = _PRIORITY_INITIALIZATION_RESULT.copy()
+            result["cached"] = True
+            return result
 
-    return {
-        "success": True,
-        "message": "Task priority support initialized.",
-        "available_priorities": PRIORITY_SCORES,
-    }
+        # Initialize the central task database.
+        initialize_task_database()
+
+        # Ensure the priority column and index exist.
+        with get_connection() as connection:
+
+            connection.execute(
+                """
+                ALTER TABLE research_tasks
+                ADD COLUMN IF NOT EXISTS
+                priority TEXT NOT NULL DEFAULT 'normal'
+                """
+            )
+
+            connection.execute(
+                """
+                CREATE INDEX IF NOT EXISTS
+                idx_tasks_priority_status
+                ON research_tasks(status, priority, created_at)
+                """
+            )
+
+        # Save the successful initialization result.
+        _PRIORITY_INITIALIZATION_RESULT = {
+            "success": True,
+            "message": "Task priority support initialized.",
+            "available_priorities": PRIORITY_SCORES,
+        }
+
+        # Mark initialization as complete.
+        _PRIORITY_INITIALIZED = True
+
+        result = _PRIORITY_INITIALIZATION_RESULT.copy()
+        result["cached"] = False
+
+        return result
 
 
 # ============================================================

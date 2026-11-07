@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 # Provide type hints.
 from typing import Any, Dict, Optional
 
-# Protect task updates against concurrent operations.
+# Support asynchronous execution and background database operations.
 import asyncio
 
 # Import database functions.
@@ -20,12 +20,20 @@ from backend.services.task_database import (
 )
 
 
-# Lock concurrent task-manager operations.
+# ============================================================
+# TASK EXECUTION MANAGEMENT
+# ============================================================
+
+# Protect task-manager operations against concurrent operations.
 _TASK_LOCK = asyncio.Lock()
 
 # Track task IDs currently executing in this process.
 _ACTIVE_TASKS = set()
 
+
+# ============================================================
+# TIMESTAMP MANAGEMENT
+# ============================================================
 
 def current_timestamp() -> str:
     """Return the current UTC time in ISO format."""
@@ -33,12 +41,16 @@ def current_timestamp() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+# ============================================================
+# INITIALIZE TASK MANAGEMENT
+# ============================================================
+
 def initialize_tasks():
     """Initialize storage and recover interrupted tasks."""
 
     initialize_task_database()
 
-    # Tasks still running from a previous process cannot continue.
+    # Recover tasks interrupted by a previous process shutdown.
     recovered_count = recover_interrupted_tasks()
 
     return {
@@ -47,12 +59,17 @@ def initialize_tasks():
     }
 
 
+# ============================================================
+# CREATE TASK
+# ============================================================
+
 async def create_task(
     research_question: str,
 ) -> Dict[str, Any]:
     """Create and persist a new research task."""
 
-    initialize_task_database()
+    # Run database initialization outside the event loop.
+    await asyncio.to_thread(initialize_task_database)
 
     task = {
         "task_id": str(uuid4()),
@@ -68,11 +85,18 @@ async def create_task(
         "retry_count": 0,
     }
 
+    # Keep task creation synchronized.
     async with _TASK_LOCK:
-        save_task(task)
+
+        # Execute PostgreSQL operations in a worker thread.
+        await asyncio.to_thread(save_task, task)
 
     return task.copy()
 
+
+# ============================================================
+# UPDATE TASK
+# ============================================================
 
 async def update_task(
     task_id: str,
@@ -95,7 +119,12 @@ async def update_task(
         raise ValueError(f"Invalid task status: {status}")
 
     async with _TASK_LOCK:
-        task = get_saved_task(task_id)
+
+        # Retrieve the task without blocking the event loop.
+        task = await asyncio.to_thread(
+            get_saved_task,
+            task_id,
+        )
 
         if task is None:
             return None
@@ -108,7 +137,7 @@ async def update_task(
         if status in {"completed", "failed"}:
             task["finished_at"] = current_timestamp()
 
-        # Clear a previous error when the task starts again.
+        # Clear a previous error when execution starts again.
         if status == "running":
             task["error"] = None
 
@@ -124,23 +153,42 @@ async def update_task(
         if result is not None:
             task["result"] = result
 
-        save_task(task)
+        # Persist the updated task outside the event loop.
+        await asyncio.to_thread(
+            save_task,
+            task,
+        )
 
         return task.copy()
 
+
+# ============================================================
+# GET TASK
+# ============================================================
 
 async def get_task(task_id: str):
     """Retrieve a task by ID."""
 
     async with _TASK_LOCK:
-        return get_saved_task(task_id)
 
+        return await asyncio.to_thread(
+            get_saved_task,
+            task_id,
+        )
+
+
+# ============================================================
+# GET ALL TASKS
+# ============================================================
 
 async def get_all_tasks():
     """Retrieve all stored tasks."""
 
     async with _TASK_LOCK:
-        tasks = get_saved_tasks()
+
+        tasks = await asyncio.to_thread(
+            get_saved_tasks,
+        )
 
     return {
         "success": True,
@@ -149,11 +197,16 @@ async def get_all_tasks():
     }
 
 
+# ============================================================
+# RESERVE TASK FOR EXECUTION
+# ============================================================
+
 async def reserve_task_for_execution(task_id: str):
     """
     Reserve a pending or failed task for execution.
 
-    A task cannot be executed twice simultaneously in this process.
+    Prevent simultaneous execution of the same task
+    within this backend process.
     """
 
     async with _TASK_LOCK:
@@ -164,7 +217,11 @@ async def reserve_task_for_execution(task_id: str):
                 "message": "This task is already executing.",
             }
 
-        task = get_saved_task(task_id)
+        # Retrieve the task without blocking the event loop.
+        task = await asyncio.to_thread(
+            get_saved_task,
+            task_id,
+        )
 
         if task is None:
             return {
@@ -181,9 +238,6 @@ async def reserve_task_for_execution(task_id: str):
                 ),
             }
 
-        # Reserve the task before releasing the lock.
-        _ACTIVE_TASKS.add(task_id)
-
         # Increase retry_count only when retrying a failed task.
         if task["status"] == "failed":
             task["retry_count"] = task.get("retry_count", 0) + 1
@@ -193,7 +247,16 @@ async def reserve_task_for_execution(task_id: str):
         task["finished_at"] = None
         task["error"] = None
 
-        save_task(task)
+        # Persist the reservation before marking it active.
+        # If the database operation fails, the task is not
+        # incorrectly left in the active-task set.
+        await asyncio.to_thread(
+            save_task,
+            task,
+        )
+
+        # Reserve the task while still holding the lock.
+        _ACTIVE_TASKS.add(task_id)
 
         return {
             "success": True,
@@ -201,8 +264,13 @@ async def reserve_task_for_execution(task_id: str):
         }
 
 
+# ============================================================
+# RELEASE TASK EXECUTION
+# ============================================================
+
 async def release_task_execution(task_id: str):
     """Release the execution reservation."""
 
     async with _TASK_LOCK:
+
         _ACTIVE_TASKS.discard(task_id)

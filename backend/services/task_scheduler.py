@@ -2,6 +2,8 @@
 # POSTGRESQL PRIORITY-BASED TASK SCHEDULER
 # ============================================================
 
+import asyncio
+
 from backend.services.database import get_connection
 
 from backend.services.task_database import (
@@ -16,6 +18,48 @@ from backend.services.task_priority import (
 from backend.services.task_dependencies import (
     initialize_task_dependencies,
 )
+
+
+# ============================================================
+# PRIORITY CONFIGURATION
+# ============================================================
+
+PRIORITY_ORDER = [
+    "critical",
+    "high",
+    "normal",
+    "low",
+]
+
+
+# ============================================================
+# SHARED ELIGIBLE TASK QUERY
+# ============================================================
+
+ELIGIBLE_TASK_QUERY = """
+    SELECT
+        tasks.task_id,
+        tasks.research_question,
+        tasks.status,
+        tasks.priority,
+        tasks.created_at,
+        tasks.retry_count
+    FROM research_tasks AS tasks
+
+    WHERE tasks.status = 'pending'
+
+    AND NOT EXISTS (
+        SELECT 1
+        FROM task_dependencies AS dependencies
+
+        JOIN research_tasks AS prerequisite
+            ON prerequisite.task_id =
+               dependencies.depends_on_task_id
+
+        WHERE dependencies.task_id = tasks.task_id
+        AND prerequisite.status != 'completed'
+    )
+"""
 
 
 # ============================================================
@@ -34,12 +78,7 @@ def initialize_task_scheduler():
         "message": (
             "Priority scheduler with dependency support initialized."
         ),
-        "priority_order": [
-            "critical",
-            "high",
-            "normal",
-            "low",
-        ],
+        "priority_order": PRIORITY_ORDER.copy(),
     }
 
 
@@ -53,41 +92,27 @@ def get_next_scheduled_task():
     initialize_priority_support()
     initialize_task_dependencies()
 
-    with get_connection() as connection:
+    query = (
+        ELIGIBLE_TASK_QUERY
+        + """
+        ORDER BY
+            CASE tasks.priority
+                WHEN 'critical' THEN 4
+                WHEN 'high' THEN 3
+                WHEN 'normal' THEN 2
+                WHEN 'low' THEN 1
+                ELSE 0
+            END DESC,
 
-        row = connection.execute(
-            """
-            SELECT
-                tasks.task_id,
-                tasks.research_question,
-                tasks.status,
-                tasks.priority,
-                tasks.created_at,
-                tasks.retry_count
-            FROM research_tasks AS tasks
-            WHERE tasks.status = 'pending'
-            AND NOT EXISTS (
-                SELECT 1
-                FROM task_dependencies AS dependencies
-                JOIN research_tasks AS prerequisite
-                    ON prerequisite.task_id =
-                       dependencies.depends_on_task_id
-                WHERE dependencies.task_id = tasks.task_id
-                AND prerequisite.status != 'completed'
-            )
-            ORDER BY
-                CASE tasks.priority
-                    WHEN 'critical' THEN 4
-                    WHEN 'high' THEN 3
-                    WHEN 'normal' THEN 2
-                    WHEN 'low' THEN 1
-                    ELSE 0
-                END DESC,
-                tasks.created_at ASC,
-                tasks.task_id ASC
-            LIMIT 1
-            """
-        ).fetchone()
+            tasks.created_at ASC,
+            tasks.task_id ASC
+
+        LIMIT 1
+        """
+    )
+
+    with get_connection() as connection:
+        row = connection.execute(query).fetchone()
 
     if row is None:
         return {
@@ -127,40 +152,28 @@ def get_scheduled_task_queue(limit=100):
     initialize_priority_support()
     initialize_task_dependencies()
 
-    with get_connection() as connection:
+    query = (
+        ELIGIBLE_TASK_QUERY
+        + """
+        ORDER BY
+            CASE tasks.priority
+                WHEN 'critical' THEN 4
+                WHEN 'high' THEN 3
+                WHEN 'normal' THEN 2
+                WHEN 'low' THEN 1
+                ELSE 0
+            END DESC,
 
+            tasks.created_at ASC,
+            tasks.task_id ASC
+
+        LIMIT %s
+        """
+    )
+
+    with get_connection() as connection:
         rows = connection.execute(
-            """
-            SELECT
-                tasks.task_id,
-                tasks.research_question,
-                tasks.status,
-                tasks.priority,
-                tasks.created_at,
-                tasks.retry_count
-            FROM research_tasks AS tasks
-            WHERE tasks.status = 'pending'
-            AND NOT EXISTS (
-                SELECT 1
-                FROM task_dependencies AS dependencies
-                JOIN research_tasks AS prerequisite
-                    ON prerequisite.task_id =
-                       dependencies.depends_on_task_id
-                WHERE dependencies.task_id = tasks.task_id
-                AND prerequisite.status != 'completed'
-            )
-            ORDER BY
-                CASE tasks.priority
-                    WHEN 'critical' THEN 4
-                    WHEN 'high' THEN 3
-                    WHEN 'normal' THEN 2
-                    WHEN 'low' THEN 1
-                    ELSE 0
-                END DESC,
-                tasks.created_at ASC,
-                tasks.task_id ASC
-            LIMIT %s
-            """,
+            query,
             (limit,),
         ).fetchall()
 
@@ -189,27 +202,34 @@ def get_scheduler_status():
     initialize_priority_support()
     initialize_task_dependencies()
 
-    with get_connection() as connection:
+    query = (
+        """
+        SELECT
+            tasks.priority,
+            COUNT(*) AS task_count
 
-        rows = connection.execute(
-            """
-            SELECT
-                tasks.priority,
-                COUNT(*) AS task_count
-            FROM research_tasks AS tasks
-            WHERE tasks.status = 'pending'
-            AND NOT EXISTS (
-                SELECT 1
-                FROM task_dependencies AS dependencies
-                JOIN research_tasks AS prerequisite
-                    ON prerequisite.task_id =
-                       dependencies.depends_on_task_id
-                WHERE dependencies.task_id = tasks.task_id
-                AND prerequisite.status != 'completed'
-            )
-            GROUP BY tasks.priority
-            """
-        ).fetchall()
+        FROM research_tasks AS tasks
+
+        WHERE tasks.status = 'pending'
+
+        AND NOT EXISTS (
+            SELECT 1
+            FROM task_dependencies AS dependencies
+
+            JOIN research_tasks AS prerequisite
+                ON prerequisite.task_id =
+                   dependencies.depends_on_task_id
+
+            WHERE dependencies.task_id = tasks.task_id
+            AND prerequisite.status != 'completed'
+        )
+
+        GROUP BY tasks.priority
+        """
+    )
+
+    with get_connection() as connection:
+        rows = connection.execute(query).fetchall()
 
     pending_counts = {
         priority: 0
@@ -224,12 +244,7 @@ def get_scheduler_status():
     next_priority = next(
         (
             priority
-            for priority in [
-                "critical",
-                "high",
-                "normal",
-                "low",
-            ]
+            for priority in PRIORITY_ORDER
             if pending_counts.get(priority, 0) > 0
         ),
         None,
@@ -242,3 +257,32 @@ def get_scheduler_status():
         "pending_by_priority": pending_counts,
         "next_priority": next_priority,
     }
+
+
+# ============================================================
+# STEP 5 - ASYNCHRONOUS SCHEDULER INTERFACE
+# ============================================================
+
+async def async_get_next_scheduled_task():
+    """Run task selection without blocking the event loop."""
+
+    return await asyncio.to_thread(
+        get_next_scheduled_task,
+    )
+
+
+async def async_get_scheduled_task_queue(limit=100):
+    """Run queue retrieval without blocking the event loop."""
+
+    return await asyncio.to_thread(
+        get_scheduled_task_queue,
+        limit,
+    )
+
+
+async def async_get_scheduler_status():
+    """Run scheduler statistics without blocking the event loop."""
+
+    return await asyncio.to_thread(
+        get_scheduler_status,
+    )
